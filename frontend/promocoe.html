@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Promoções - Catálogo</title>
+  <link rel="stylesheet" href="promocoe.css">
+</head>
+
+<body>
+  <header>
+    <h1>🔥 Promoções Imperdíveis</h1>
+    <a href="produtos.html" class="btn-voltar">Voltar ao Catálogo</a>
+  </header>
+
+  <div id="notificacoes" class="notificacoes"></div>
+  
+  <main>
+    <section class="products-grid" id="promocoes">
+      <!-- Os produtos em promoção serão carregados aqui -->
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 Catálogo Teixeira Móveis - Todos os direitos reservados.</p>
+  </footer>
+
+  <script>
+  const API_BASE = "https://catalogo-h0ro.onrender.com";
+
+  async function loadPromocoes() {
+    const container = document.getElementById("promocoes");
+    const token = localStorage.getItem("token"); // só admins podem excluir promoções
+
+    try {
+      const res = await fetch(`${API_BASE}/api/promos`);
+      const promocoes = await res.json();
+
+      if (!Array.isArray(promocoes) || promocoes.length === 0) {
+        container.innerHTML = "<p class='sem-promocao'>Nenhum produto em promoção no momento 😢</p>";
+        return;
+      }
+
+      container.innerHTML = promocoes
+        .map(
+          (p) => `
+          <div class="product-card">
+            <div class="badge">🔥 PROMOÇÃO</div>
+            <img src="${
+              p.image || "https://via.placeholder.com/300x300?text=Sem+Imagem"
+            }" alt="${p.name}">
+            <h3>${p.name}</h3>
+            <p>${p.description || ""}</p>
+            <p><strong>De:</strong> <s>R$ ${p.originalPrice?.toFixed(2) || 0}</s></p>
+            <p class="price">🔥 Por: R$ ${p.salePrice?.toFixed(2) || 0}</p>
+            ${
+              token
+                ? `<button class="delete-btn" onclick="deletePromo('${p._id}')">🗑️ Excluir</button>`
+                : ""
+            }
+          </div>
+        `
+        )
+        .join("");
+    } catch (error) {
+      console.error("Erro ao carregar promoções:", error);
+      container.innerHTML = "<p class='erro'>Erro ao carregar promoções.</p>";
+    }
+  }
+
+  // 🗑️ Função para excluir produto em promoção
+  async function deletePromo(id) {
+    if (!confirm("Tem certeza que deseja excluir esta promoção?")) return;
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("⚠️ Você precisa estar logado como administrador para excluir promoções.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/api/promos/${id}`, {
+        method: "DELETE",
+        headers: { "x-auth-token": token },
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("🗑️ Promoção excluída com sucesso!");
+        loadPromocoes(); // recarrega lista
+      } else {
+        alert(data.msg || "Erro ao excluir promoção.");
+      }
+    } catch (error) {
+      console.error("Erro ao excluir promoção:", error);
+      alert("Erro ao excluir promoção.");
+    }
+  }
+
+  loadPromocoes();
+</script>
+</body>
+</html>

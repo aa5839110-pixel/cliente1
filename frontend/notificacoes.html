@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notificações</title>
+<link rel="stylesheet" href="notificacoes.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+<header>
+<h1>Central de Notificações</h1>
+<p>Envie comunicados para usuários do catálogo</p>
+</header>
+
+<main class="box">
+
+<i class="fa fa-bell topo-icon"></i>
+
+<h2>Nova Notificação</h2>
+
+<form id="notifyForm">
+
+<textarea
+id="notifyMessage"
+rows="6"
+placeholder="Digite sua mensagem..."
+required
+></textarea>
+
+<button type="submit">
+📢 Enviar Notificação
+</button>
+
+</form>
+
+<p id="notifyStatus"></p>
+
+<a href="painel.html" class="voltar">← Voltar ao Painel</a>
+
+</main>
+
+<script src="main.js"></script>
+<script src="notificacoes.js"></script>
+
+</body>
+</html>

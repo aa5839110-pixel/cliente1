@@ -1,0 +1,109 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.login-container {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background: #0078ff;
+  color: white;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #005ec7;
+}
+
+#msg {
+  color: red;
+  margin-top: 10px;
+}
+
+#idleModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+#idleModalBox {
+  background: #fff;
+  padding: 18px;
+  border-radius: 8px;
+  width: 320px;
+  max-width: 90%;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+#idleModalBox h3 { margin: 0 0 8px 0; }
+#idleModalBox p { margin: 0; }
+#idleStayBtn, #idleLogoutBtn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+#idleStayBtn { background: #2b8aef; color: #fff; }
+#idleLogoutBtn { background: #e04b4b; color: #fff; }
+
+a.promocoes-btn {
+  border: 2px solid #ff4d4d;
+  color: #ff4d4d;
+  padding: 8px 18px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+a.promocoes-btn:hover {
+  background: #ff4d4d;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(255, 77, 77, 0.3);
+}
+
+.notificacoes {
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #444;
+}
+
+.notificacao-item {
+  background: #fff3cd;
+  padding: 8px;
+  margin-bottom: 6px;
+  border-radius: 5px;
+  border-left: 4px solid #f9a825;
+}

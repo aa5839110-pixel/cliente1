@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar Produto</title>
+  <link rel="stylesheet" href="admin.css">
+
+  <style>
+    /* === Ajustes gerais === */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f7f7f7;
+      color: #333;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: #004aad;
+      color: white;
+    }
+
+    header h1 {
+      font-size: 1.4em;
+      margin: 0;
+    }
+
+    header button {
+      background: #fff;
+      border: none;
+      color: #004aad;
+      padding: 6px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* === Container com scroll horizontal === */
+    main {
+      overflow-x: auto;
+      padding: 20px;
+      white-space: nowrap;
+    }
+
+    form {
+      display: inline-block;
+      min-width: 650px; /* permite scroll lateral */
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-top: 4px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    /* === Imagem de preview === */
+    #imagePreview {
+      display: block;
+      width: 250px;
+      height: 250px;
+      object-fit: contain;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-top: 15px;
+      background-color: #fafafa;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .save {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .delete {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .save:hover { background: #218838; }
+    .delete:hover { background: #c82333; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Editar Produto</h1>
+    <button id="voltar">← Voltar</button>
+  </header>
+
+  <main>
+    <form id="editForm">
+      <input type="hidden" id="productMongoId">
+
+      <label>ID Interno</label>
+      <input type="text" id="productId" readonly>
+
+      <label>Nome do Produto</label>
+      <input type="text" id="name" required>
+
+      <label>Descrição</label>
+      <textarea id="description"></textarea>
+
+      <label>Preço Tabela 1</label>
+      <input type="number" id="price1" required>
+
+      <label>Preço Tabela 2</label>
+      <input type="number" id="price2" required>
+
+      <label>Estoque</label>
+      <input type="number" id="stock" required>
+
+      <label>Categoria</label>
+      <input type="text" id="category" required>
+
+      <label>Imagem do Produto</label>
+      <input type="file" id="image" accept="image/*">
+
+      <img id="imagePreview" alt="Preview da imagem">
+
+      <label>Produto em promoção?</label>
+      <select id="isPromo">
+        <option value="false">Não</option>
+        <option value="true">Sim</option>
+      </select>
+
+      <div class="buttons">
+        <button type="submit" class="save">💾 Salvar Alterações</button>
+        <button id="delete" class="delete" type="button">🗑️ Excluir Produto</button>
+      </div>
+    </form>
+  </main>
+
+  <script src="edit.js"></script>
+</body>
+</html>

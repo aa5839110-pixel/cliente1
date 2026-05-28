@@ -1,0 +1,309 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f4f6f8;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #2b2d42;
+  color: #fff;
+  padding: 15px 30px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+header h1 {
+  font-size: 1.3rem;
+}
+
+#logout {
+  background: #ef233c;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
+}
+
+#logout:hover {
+  background: #d90429;
+}
+
+main {
+  max-width: 900px;
+  margin: 30px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+h2 {
+  color: #2b2d42;
+  border-bottom: 2px solid #8d99ae;
+  padding-bottom: 5px;
+}
+
+form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+input, textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+}
+
+textarea {
+  grid-column: span 2;
+  resize: vertical;
+  min-height: 80px;
+}
+
+button {
+  background: #2b2d42;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 0.95rem;
+}
+
+button:hover {
+  background: #3d405b;
+}
+
+.product-card {
+  background: #edf2f4;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.product-card strong {
+  font-size: 1.05rem;
+}
+
+.json-upload {
+  margin-top: 30px;
+  padding: 15px;
+  border: 2px dashed #8d99ae;
+  border-radius: 8px;
+  text-align: center;
+  background: #f8f9fa;
+}
+
+.json-upload h3 {
+  margin-top: 0;
+  color: #2b2d42;
+}
+
+.json-upload input {
+  margin-top: 10px;
+}
+
+.json-upload button {
+  margin-top: 10px;
+}
+
+form label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+button.save {
+  background: #2b2d42;
+}
+
+button.delete {
+  background: #d90429;
+}
+
+/* === Botões do cabeçalho === */
+.admin-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-buttons a.btn-link {
+  background: #0088cc;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.admin-buttons a.btn-link:hover {
+  background: #0070aa;
+}
+
+.logout {
+  background: #ef233c;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.logout:hover {
+  background: #d90429;
+}
+
+.import-json {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 25px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.import-json input {
+  margin: 10px 0;
+}
+
+#importJsonBtn {
+  background: #2b2d42;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#importJsonBtn:hover {
+  opacity: 0.9;
+}
+
+/* Permite rolagem horizontal no painel de edição */
+.edit-container {
+  width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 10px;
+}
+
+/* Para campos grandes dentro do form */
+.edit-container form {
+  display: inline-block;
+  min-width: 600px; /* ajuste conforme layout */
+}
+
+#idleModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+#idleModalBox {
+  background: #fff;
+  padding: 18px;
+  border-radius: 8px;
+  width: 320px;
+  max-width: 90%;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+#idleModalBox h3 { margin: 0 0 8px 0; }
+#idleModalBox p { margin: 0; }
+#idleStayBtn, #idleLogoutBtn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+#idleStayBtn { background: #2b8aef; color: #fff; }
+#idleLogoutBtn { background: #e04b4b; color: #fff; }
+
+#welcomeScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #2f3640;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeOut 1s ease 2.5s forwards;
+}
+
+#welcomeScreen h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  animation: slideIn 1s ease;
+}
+
+#welcomeScreen p {
+  opacity: 0.8;
+}
+
+/* ENTRADA */
+@keyframes slideIn {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* SAÍDA */
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+/* ===== WELCOME SCREEN ===== */
+#welcomeScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #2f3640;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}

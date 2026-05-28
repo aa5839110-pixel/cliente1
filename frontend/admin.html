@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel Administrativo - Catálogo</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <header>
+    <script>
+      // 🚫 Bloqueio imediato de acesso à página admin.html
+      const isAdmin = localStorage.getItem("isAdmin") === "true";
+      if (!isAdmin) {
+        alert("Acesso negado: apenas administradores podem acessar esta página.");
+        window.location.href = "produtos.html"; // redireciona imediatamente
+      }
+    </script>
+      <div id="welcomeScreen">
+        <h1>👋 Bem-vindo ao Painel</h1>
+        <p>Carregando sistema...</p>
+      </div>
+    <h1>Painel de Administração</h1>
+    <div class="admin-buttons">
+      <a href="produtos.html" class="btn-link">🛍️ Ver Produtos</a>
+      <a href="promocoe.html" class="btn-link">🔥 Ver Promoções</a>
+      <button id="logout" class="logout">Sair</button>
+      <a href="estoque.html" class="btn-link">📦 Gestão de Estoque</a>
+    </div>
+  </header>
+
+  <!-- Idle logout modal -->
+  <div id="idleModal" style="display:none;">
+    <div id="idleModalBox">
+      <h3>Sessão inativa</h3>
+      <p>Você será desconectado por inatividade em <span id="idleCountdown">60</span> segundos.</p>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:12px;">
+        <button id="idleStayBtn">Continuar conectado</button>
+        <button id="idleLogoutBtn">Sair agora</button>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <!-- === PRODUTOS NORMAIS === -->
+    <section id="produtos-normais">
+      <h2>🛒 Adicionar Novo Produto</h2>
+      <form id="productForm" enctype="multipart/form-data">
+        <input type="text" id="productId" name="productId" placeholder="ID do produto" required>
+        <input type="text" id="name" name="name" placeholder="Nome" required>
+        <input type="text" id="description" name="description" placeholder="Descrição">
+        <input type="number" id="price1" name="price1" placeholder="Preço tabela 1" step="0.01" required>
+        <input type="number" id="price2" name="price2" placeholder="Preço tabela 2" step="0.01" required>
+        <input type="number" id="stock" name="stock" placeholder="Estoque" required>
+        <input type="text" id="category" name="category" placeholder="Categoria" required>
+        <input type="file" id="image" name="image" accept="image/*" required>
+
+        <button type="submit" class="btn-add">💾 Adicionar Produto</button>
+      </form>
+    </section>
+
+    <hr>
+
+    <!-- === PRODUTOS EM PROMOÇÃO === -->
+    <section id="produtos-promocao">
+      <h2>🔥 Adicionar Produto em Promoção</h2>
+      <form id="promoForm" enctype="multipart/form-data">
+        <input type="text" id="promoName" name="name" placeholder="Nome do produto" required>
+        <input type="text" id="promoDescription" name="description" placeholder="Descrição">
+        <input type="number" id="originalPrice" name="originalPrice" placeholder="Preço original" step="0.01" required>
+        <input type="number" id="salePrice" name="salePrice" placeholder="Preço promocional" step="0.01" required>
+        <input type="text" id="promoCategory" name="category" placeholder="Categoria (opcional)">
+        <input type="file" id="promoImage" name="image" accept="image/*" required>
+
+        <button type="submit" class="btn-promo">🔥 Adicionar à Promoção</button>
+      </form>
+    </section>
+
+    <hr>
+
+    <!-- === UPLOAD JSON === -->
+    <section id="jsonUpload">
+      <h2>📦 Atualizar produtos via JSON</h2>
+      <input type="file" id="jsonFile" accept=".json">
+      <button id="uploadJsonBtn">📤 Enviar Arquivo JSON</button>
+      <p id="jsonStatus"></p>
+    </section>
+
+    <hr>
+
+    <section id="notifySection">
+      <h2>📢 Enviar Notificação aos Usuários</h2>
+      <form id="notifyForm">
+        <textarea id="notifyMessage" rows="3" placeholder="Digite a mensagem de notificação..." required></textarea>
+        <button type="submit">Enviar Notificação</button>
+      </form>
+      <p id="notifyStatus"></p>
+    </section>
+    <hr>
+
+    <section id="lista-produtos">
+      <h2>📋 Produtos Cadastrados</h2>
+      <div id="adminProducts"></div>
+    </section>
+    
+  </main>
+
+  <script src="main.js"></script>
+
+ <script>
+  window.addEventListener("load", () => {
+
+    const alreadyShown = localStorage.getItem("welcomeShown");
+
+    if (!alreadyShown) {
+      // mostra normalmente
+      setTimeout(() => {
+        const splash = document.getElementById("welcomeScreen");
+        if (splash) splash.style.display = "none";
+      }, 1500);
+
+      // marca como já exibido
+      localStorage.setItem("welcomeShown", "true");
+
+    } else {
+      // remove imediatamente
+      const splash = document.getElementById("welcomeScreen");
+      if (splash) splash.style.display = "none";
+    }
+
+  });
+</script>
+</body>
+</html>

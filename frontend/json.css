@@ -1,0 +1,152 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body{
+  min-height:100vh;
+  background:linear-gradient(135deg,#0f172a,#111827,#1e293b);
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:30px 20px;
+}
+
+/* topo */
+header{
+  text-align:center;
+  margin-bottom:35px;
+}
+
+header h1{
+  font-size:34px;
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+header p{
+  color:#94a3b8;
+  font-size:15px;
+}
+
+/* box principal */
+.box{
+  width:100%;
+  max-width:650px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:24px;
+  padding:40px 30px;
+  text-align:center;
+  backdrop-filter:blur(10px);
+  box-shadow:0 15px 35px rgba(0,0,0,.28);
+}
+
+/* ícone */
+.topo-icon{
+  font-size:54px;
+  color:#f59e0b;
+  margin-bottom:18px;
+}
+
+.box h2{
+  font-size:26px;
+  margin-bottom:25px;
+}
+
+/* input file */
+input[type="file"]{
+  width:100%;
+  padding:16px;
+  border:none;
+  border-radius:14px;
+  background:#1e293b;
+  color:#fff;
+  margin-bottom:20px;
+  cursor:pointer;
+}
+
+/* botão */
+button{
+  width:100%;
+  height:54px;
+  border:none;
+  border-radius:14px;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  background:#f59e0b;
+  color:#111827;
+  transition:.3s;
+}
+
+button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 20px rgba(245,158,11,.25);
+}
+
+/* status */
+#jsonStatus{
+  margin-top:20px;
+  min-height:24px;
+  font-size:15px;
+  color:#cbd5e1;
+}
+
+/* voltar */
+.voltar{
+  display:inline-block;
+  margin-top:28px;
+  text-decoration:none;
+  color:#38bdf8;
+  font-weight:600;
+  transition:.3s;
+}
+
+.voltar:hover{
+  color:#7dd3fc;
+}
+
+#progressBar{
+   width:100%;
+   height:24px;
+   background:#ddd;
+   border-radius:20px;
+   overflow:hidden;
+   margin-top:10px;
+}
+
+#progressFill{
+   width:0%;
+   height:100%;
+   background:linear-gradient(90deg,#28a745,#00c851);
+   text-align:center;
+   color:#fff;
+   font-weight:bold;
+   line-height:24px;
+   transition:0.3s;
+}
+
+/* mobile */
+@media(max-width:768px){
+
+  body{
+    padding:20px 15px;
+  }
+
+  header h1{
+    font-size:28px;
+  }
+
+  .box{
+    padding:28px 20px;
+  }
+
+  .box h2{
+    font-size:22px;
+  }
+
+}

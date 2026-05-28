@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atualização via JSON</title>
+
+<link rel="stylesheet" href="json.css">
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+<body>
+
+<header class="topo">
+  <h1>📦 Atualização de Estoque</h1>
+  <p>Importação separada Loja 1 e Loja 5</p>
+</header>
+
+<main class="container">
+
+  <!-- LOJA 1 -->
+  <section class="card-json">
+    
+    <div class="icone loja1">
+      <i class="fa-solid fa-store"></i>
+    </div>
+
+    <h2>🏬 Loja 1</h2>
+    <p>Eletrodomésticos</p>
+
+    <input type="file"
+    id="jsonFile1"
+    accept=".json">
+
+    <button id="uploadBtn1">
+      📤 Atualizar Loja 1
+    </button>
+
+    <div class="progressBar">
+      <div id="progressFill1" class="fill"></div>
+    </div>
+
+    <p id="status1" class="status">
+      Aguardando arquivo...
+    </p>
+
+  </section>
+
+  <!-- LOJA 5 -->
+  <section class="card-json">
+
+    <div class="icone loja5">
+      <i class="fa-solid fa-warehouse"></i>
+    </div>
+
+    <h2>🏬 Loja 5</h2>
+    <p>Móveis</p>
+
+    <input type="file"
+    id="jsonFile5"
+    accept=".json">
+
+    <button id="uploadBtn5">
+      📤 Atualizar Loja 5
+    </button>
+
+    <div class="progressBar">
+      <div id="progressFill5" class="fill"></div>
+    </div>
+
+    <p id="status5" class="status">
+      Aguardando arquivo...
+    </p>
+
+  </section>
+
+</main>
+
+<!-- STATUS GERAL -->
+<section class="status-geral-box">
+
+  <h3>📊 Status Geral</h3>
+
+  <p id="statusGeral">
+    Nenhuma atualização iniciada.
+  </p>
+
+  <a href="painel.html" class="voltar">
+    ← Voltar ao Painel
+  </a>
+
+</section>
+
+<script src="json.js"></script>
+
+</body>
+</html>
