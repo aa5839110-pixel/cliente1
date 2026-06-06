@@ -1,6 +1,7 @@
 /* ======================================================
    MAIN.JS PROFISSIONAL - ORGANIZADO E COMPLETO
    Sistema Catálogo Teixeira
+   com detecção de Vendedor Externo (+20% nos preços)
 ====================================================== */
 
 /* ======================================================
@@ -71,7 +72,7 @@ function safeJson(res) {
 })();
 
 /* ======================================================
-   LOGIN
+   LOGIN (COM DETECÇÃO DE VENDEDOR EXTERNO)
 ====================================================== */
 const loginForm = $("loginForm");
 
@@ -102,6 +103,19 @@ if (loginForm) {
       if (res.ok && data.token) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("isAdmin", data.user.isAdmin);
+
+        // 🔥 DETECTA VENDEDOR EXTERNO PELO E-MAIL
+        const email = $("email").value.trim();
+        const isVendedorExterno = email === "vendedor@teixeira.com" || email.includes("@vendedor");
+        // Exemplos alternativos:
+        // const isVendedorExterno = email.endsWith("@externo.com");
+        // const isVendedorExterno = email === "joao@vendedor.com";
+
+        if (isVendedorExterno) {
+          localStorage.setItem("isVendedorExterno", "true");
+        } else {
+          localStorage.removeItem("isVendedorExterno");
+        }
 
         window.location.href =
           data.user.isAdmin ? "painel.html" : "produtos.html";
@@ -220,7 +234,7 @@ if (productForm) {
 }
 
 /* ======================================================
-   UPDATE JSON
+   UPDATE JSON (comentado - caso queira ativar)
 ====================================================== 
 document.addEventListener("DOMContentLoaded", () => {
 

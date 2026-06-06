@@ -187,7 +187,9 @@ button:active{
   animation:girar .8s linear infinite;
   margin:auto;
 }
-
+.ss{
+  color:red;
+}
 @keyframes girar{
   to{
     transform:rotate(360deg);

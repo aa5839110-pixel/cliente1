@@ -6,6 +6,11 @@ if (!token) {
 }
 
 /* =========================
+   VARIÁVEL GLOBAL
+========================= */
+let isVendedorExterno = false; // será definido ao carregar produtos
+
+/* =========================
    ELEMENTOS
 ========================= */
 const container = document.getElementById("productsContainer");
@@ -33,14 +38,28 @@ window.addEventListener("load", () => {
 });
 
 /* =========================
-   CARREGAR PRODUTOS
+   CARREGAR PRODUTOS (COM +20% SE VENDEDOR EXTERNO)
 ========================= */
 async function carregarProdutos() {
   container.innerHTML = "<p>Carregando produtos...</p>";
 
   try {
     const res = await fetch(`${API_BASE}/api/products`);
-    todosProdutos = await res.json();
+    let produtos = await res.json();
+
+    // 🔥 VERIFICA SE É VENDEDOR EXTERNO
+    isVendedorExterno = localStorage.getItem("isVendedorExterno") === "true";
+
+    if (isVendedorExterno) {
+      // Aplica +20% no price1 (e opcionalmente no price2 se quiser)
+      produtos = produtos.map(prod => ({
+        ...prod,
+        price1: prod.price1 * 1.2,
+        price2: prod.price1 * 1.2 // se quiser que tabela2 também tenha o mesmo valor; opcional
+      }));
+    }
+
+    todosProdutos = produtos;
 
     atualizarCategorias();
     exibirProdutos(todosProdutos);
@@ -90,7 +109,7 @@ async function carregarTopVendas() {
 }
 
 /* =========================
-   EXIBIR PRODUTOS
+   EXIBIR PRODUTOS (COM EXIBIÇÃO DIFERENCIADA PARA VENDEDOR EXTERNO)
 ========================= */
 function exibirProdutos(lista) {
 
@@ -118,6 +137,40 @@ function exibirProdutos(lista) {
       alerta = `<span class="badge-baixo">ÚLTIMAS UNIDADES</span>`;
     }
 
+    // 👇 BLOCO DE PREÇOS: muda conforme o tipo de usuário
+    let precoHTML = "";
+    if (isVendedorExterno) {
+      precoHTML = `<strong>💰 Preço à vista: R$ ${Number(p.price1 || 0).toFixed(2)}</strong>`;
+    } else {
+      precoHTML = `
+        <strong>Tabela 1: R$ ${Number(p.price1 || 0).toFixed(2)}</strong>
+        <strong>Tabela 2: R$ ${Number(p.price2 || 0).toFixed(2)}</strong>
+      `;
+    }
+
+    // 👇 BOTÃO EDITAR: escondido para vendedor externo
+    let botoes = `
+      <button onclick="compartilharProduto(
+        '${escapeJs(p.name)}',
+        '${p.price1}',
+        '${escapeJs(p.image || "")}'
+      )">
+        📲 Compartilhar
+      </button>
+
+      <button onclick="copiarTexto(
+        '${escapeJs(p.name)}',
+        '${p.price1}',
+        '${escapeJs(p.image || "")}'
+      )">
+        📋 Copiar
+      </button>
+    `;
+
+    if (!isVendedorExterno) {
+      botoes += `<button onclick="abrirModal('${p._id}')">✏️ Editar</button>`;
+    }
+
     return `
       <div class="product-card">
 
@@ -131,8 +184,7 @@ function exibirProdutos(lista) {
 
           <p>${p.description || "Sem descrição"}</p>
 
-          <strong>Tabela 1: R$ ${Number(p.price1 || 0).toFixed(2)}</strong>
-          <strong>Tabela 2: R$ ${Number(p.price2 || 0).toFixed(2)}</strong>
+          ${precoHTML}
 
           <small>ID: ${p.productId || "-"}</small>
           <small>${p.category || "-"}</small>
@@ -144,27 +196,7 @@ function exibirProdutos(lista) {
           </div>
 
           <div class="card-buttons">
-
-            <button onclick="compartilharProduto(
-              '${escapeJs(p.name)}',
-              '${p.price1}',
-              '${escapeJs(p.image || "")}'
-            )">
-              📲 Compartilhar
-            </button>
-
-            <button onclick="copiarTexto(
-              '${escapeJs(p.name)}',
-              '${p.price1}',
-              '${escapeJs(p.image || "")}'
-            )">
-              📋 Copiar
-            </button>
-
-            <button onclick="abrirModal('${p._id}')">
-              ✏️ Editar
-            </button>
-
+            ${botoes}
           </div>
 
         </div>
@@ -229,7 +261,7 @@ buscaInput.addEventListener("input", aplicarFiltros);
 categoriaFiltro.addEventListener("change", aplicarFiltros);
 
 /* =========================
-   TEXTO
+   TEXTO PARA COMPARTILHAR/COPIAR
 ========================= */
 function gerarMensagem(nome, p1, imagem) {
   const preco = Number(p1 || 0)
@@ -271,9 +303,14 @@ function compartilharProduto(nome, p1, imagem) {
 }
 
 /* =========================
-   MODAL
+   MODAL (EDIÇÃO) – NÃO SERÁ ACESSADO POR VENDEDOR EXTERNO
 ========================= */
 async function abrirModal(id) {
+  // Segurança extra: impede vendedor externo de abrir o modal
+  if (isVendedorExterno) {
+    alert("Acesso negado.");
+    return;
+  }
 
   const res =
     await fetch(`${API_BASE}/api/products/${id}`);
@@ -302,11 +339,17 @@ window.onclick = e => {
 };
 
 /* =========================
-   SALVAR
+   SALVAR EDIÇÃO
 ========================= */
 formEditar.addEventListener("submit", async e => {
 
   e.preventDefault();
+
+  // Segurança extra
+  if (isVendedorExterno) {
+    alert("Ação não permitida.");
+    return;
+  }
 
   const id =
     document.getElementById("modalId").value;
@@ -338,9 +381,14 @@ formEditar.addEventListener("submit", async e => {
 });
 
 /* =========================
-   EXCLUIR
+   EXCLUIR PRODUTO
 ========================= */
 excluirBtn.onclick = async () => {
+
+  if (isVendedorExterno) {
+    alert("Ação não permitida.");
+    return;
+  }
 
   if (!confirm("Deseja excluir este produto?")) return;
 

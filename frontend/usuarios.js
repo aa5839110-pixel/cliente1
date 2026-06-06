@@ -11,11 +11,28 @@ const status = document.getElementById("status");
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
+  const tipo = document.getElementById("tipoUsuario").value;
+  let email = document.getElementById("email").value.trim();
+  const name = document.getElementById("name").value;
+  const password = document.getElementById("password").value;
+
+  // Para vendedor externo, força o email a conter "@vendedor" (opcional, mas recomendado)
+  if (tipo === "vendedor" && !email.includes("@vendedor")) {
+    // Se quiser forçar, pode acrescentar automaticamente ou pedir correção
+    if (!confirm("Email de vendedor externo geralmente contém '@vendedor'. Deseja continuar assim mesmo?")) {
+      return;
+    }
+  }
+
+  // Define isAdmin de acordo com o tipo
+  let isAdminValue = false;
+  if (tipo === "admin") isAdminValue = true;
+
   const data = {
-    name: document.getElementById("name").value,
-    email: document.getElementById("email").value,
-    password: document.getElementById("password").value,
-    isAdmin: document.getElementById("isAdmin").value
+    name: name,
+    email: email,
+    password: password,
+    isAdmin: isAdminValue
   };
 
   status.innerText = "Criando usuário...";
