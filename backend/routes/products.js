@@ -79,7 +79,7 @@ router.get("/:id", async (req, res) => {
 router.post(
   "/",
   auth,
-  upload.array("images", 6),   // 🔥 ALTERADO: aceita até 6 arquivos no campo "images"
+  upload.array("images", 6),
   async (req, res) => {
     try {
       console.log("📦 Body:", req.body);
@@ -88,7 +88,6 @@ router.post(
       let imageUrl = "";
       let imageGallery = [];
 
-      // 🔥 SUBSTITUIÇÃO DO BLOCO DE UPLOAD
       if (req.files && req.files.length > 0) {
         for (const file of req.files) {
           const result = await new Promise((resolve, reject) => {
@@ -103,7 +102,7 @@ router.post(
           });
           imageGallery.push(result.secure_url);
         }
-        imageUrl = imageGallery[0]; // primeira imagem como principal
+        imageUrl = imageGallery[0];
         console.log(`✅ ${imageGallery.length} imagem(ns) enviada(s)`);
       }
 
@@ -120,8 +119,8 @@ router.post(
         stockL5: 0,
         stockTotal: estoqueInicial,
         stock: estoqueInicial,
-        image: imageUrl,          // 🔥 SALVA A PRINCIPAL
-        images: imageGallery,     // 🔥 SALVA O ARRAY COMPLETO
+        image: imageUrl,
+        images: imageGallery,
         isPromo: req.body.isPromo === "true" || req.body.isPromo === true,
         lastStock: estoqueInicial
       });
@@ -137,29 +136,79 @@ router.post(
   }
 );
 
-// Editar produto (mantém como estava)
-router.put("/:id", auth, async (req, res) => {
-  try {
-    const produto = await Product.findById(req.params.id);
-    if (!produto) return res.status(404).json({ msg: "Produto não encontrado" });
-    Object.assign(produto, req.body);
-    produto.stockTotal = Number(produto.stockL1 || 0) + Number(produto.stockL5 || 0);
-    produto.stock = produto.stockTotal;
-    await produto.save();
-    res.json({ msg: "Produto atualizado", product: produto });
-  } catch {
-    res.status(500).json({ msg: "Erro ao atualizar produto" });
-  }
-});
+// =============================================
+// EDITAR PRODUTO (COM SUPORTE A UPLOAD DE IMAGENS)
+// =============================================
+router.put(
+  "/:id",
+  auth,
+  upload.array("images", 6),  // Aceita multipart/form-data com campo "images"
+  async (req, res) => {
+    try {
+      const produto = await Product.findById(req.params.id);
+      if (!produto) {
+        return res.status(404).json({ msg: "Produto não encontrado" });
+      }
 
-// Update JSON multiloja (mantido igual)
+      // Atualiza os campos de texto (se vierem no body)
+      if (req.body.name !== undefined) produto.name = req.body.name;
+      if (req.body.description !== undefined) produto.description = req.body.description;
+      if (req.body.price1 !== undefined) produto.price1 = Number(req.body.price1);
+      if (req.body.price2 !== undefined) produto.price2 = Number(req.body.price2);
+      if (req.body.stock !== undefined) {
+        const novoStock = Number(req.body.stock);
+        produto.stockL1 = novoStock;
+        produto.stockTotal = novoStock + Number(produto.stockL5 || 0);
+        produto.stock = produto.stockTotal;
+      }
+      if (req.body.category !== undefined) produto.category = req.body.category;
+
+      // Processa novas imagens, se houver
+      if (req.files && req.files.length > 0) {
+        const imageGallery = [];
+        for (const file of req.files) {
+          const result = await new Promise((resolve, reject) => {
+            const stream = cloudinary.v2.uploader.upload_stream(
+              { folder: "catalogo-produtos" },
+              (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+              }
+            );
+            streamifier.createReadStream(file.buffer).pipe(stream);
+          });
+          imageGallery.push(result.secure_url);
+        }
+        // Substitui as imagens existentes pelas novas
+        produto.images = imageGallery;
+        produto.image = imageGallery[0] || ""; // primeira como principal
+      }
+
+      // Recalcula campos derivados (estoque total)
+      produto.stockTotal = Number(produto.stockL1 || 0) + Number(produto.stockL5 || 0);
+      produto.stock = produto.stockTotal;
+      produto.lastStock = produto.stockTotal;
+
+      await produto.save();
+      res.json({ msg: "Produto atualizado com sucesso", product: produto });
+    } catch (err) {
+      console.error("🔥 Erro ao atualizar produto:", err);
+      res.status(500).json({ msg: "Erro ao atualizar produto", error: err.message });
+    }
+  }
+);
+
+// Update JSON multiloja
 router.post("/update-json", auth, async (req, res) => {
-  // ... (código original, não alterado)
   try {
     const loja = String(req.query.loja || "").trim();
-    if (!["1", "5"].includes(loja)) return res.status(400).json({ msg: "Informe ?loja=1 ou ?loja=5" });
+    if (!["1", "5"].includes(loja)) {
+      return res.status(400).json({ msg: "Informe ?loja=1 ou ?loja=5" });
+    }
     const updates = req.body;
-    if (!Array.isArray(updates)) return res.status(400).json({ msg: "Formato inválido" });
+    if (!Array.isArray(updates)) {
+      return res.status(400).json({ msg: "Formato inválido" });
+    }
     let atualizados = 0, vendas = 0, reposicoes = 0;
     const historicoItens = [];
     for (const item of updates) {
@@ -187,14 +236,31 @@ router.post("/update-json", auth, async (req, res) => {
         produto.stockTotal = Number(produto.stockL1 || 0) + Number(produto.stockL5 || 0);
         produto.stock = produto.stockTotal;
         produto.lastStock = produto.stockTotal;
-        historicoItens.push({ productId: produto.productId, name: produto.name, beforeStock: estoqueAntigo, afterStock: estoqueNovo, diff: diferenca, loja });
+        historicoItens.push({
+          productId: produto.productId,
+          name: produto.name,
+          beforeStock: estoqueAntigo,
+          afterStock: estoqueNovo,
+          diff: diferenca,
+          loja
+        });
         await produto.save();
         atualizados++;
       } catch (erroInterno) { console.log(erroInterno); }
     }
-    await StockHistory.create({ updatedProducts: atualizados, salesDetected: vendas, restockDetected: reposicoes, user: "Administrador", loja, items: historicoItens });
+    await StockHistory.create({
+      updatedProducts: atualizados,
+      salesDetected: vendas,
+      restockDetected: reposicoes,
+      user: "Administrador",
+      loja,
+      items: historicoItens
+    });
     res.json({ msg: `🏬 Loja ${loja} | ✅ ${atualizados} atualizados | 🛒 ${vendas} vendas | 📦 ${reposicoes} reposições` });
-  } catch (err) { console.log(err); res.status(500).json({ msg: "Erro update-json" }); }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ msg: "Erro update-json" });
+  }
 });
 
 // Excluir produto

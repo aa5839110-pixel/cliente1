@@ -107,7 +107,7 @@ async function carregarTopVendas() {
           <img
             src="${imgSrc}"
             class="produto-imagem"
-            onclick="visualizarImagem('${imgSrc}')"
+            onclick="visualizarImagem('${p._id}')"
           >
           <div class="top-info">
             <h3>${medalha} ${p.name}</h3>
@@ -178,13 +178,13 @@ function exibirProdutos(lista) {
       botoes += `<button onclick="abrirModal('${p._id}')">✏️ Editar</button>`;
     }
 
-    const imgSrc = obterImagem(p);
+    const imgSrc = p.image || (p.images && p.images[0]) || "";
     return `
       <div class="product-card">
         <img
           src="${imgSrc}"
           class="produto-imagem"
-          onclick="visualizarImagem('${imgSrc}')"
+          onclick="visualizarImagem('${p._id}')"
         >
         <div class="product-info">
           ${alerta}
@@ -277,7 +277,7 @@ function compartilharProduto(nome, p1, imagem) {
 }
 
 /* =========================
-   MODAL (EDIÇÃO)
+   MODAL (EDIÇÃO COM UPLOAD DE MÚLTIPLAS IMAGENS)
 ========================= */
 async function abrirModal(id) {
   if (isVendedorExterno) {
@@ -300,38 +300,49 @@ async function abrirModal(id) {
   const imgSrc = obterImagem(p);
   document.getElementById("modalImage").src = imgSrc;
 
-  modal.style.display = "flex";
-}
-
-/* =========================
-   VISUALIZAR IMAGEM (SEM EDIÇÃO)
-========================= */
-function visualizarImagem(url) {
-  if (!url) return;
-  document.getElementById("modalImage").src = url;
-  document.getElementById("editarProdutoForm").style.display = "none";
-  modal.style.display = "flex";
-}
-
-/* =========================
-   FECHAR MODAL
-========================= */
-fecharModal.onclick = () => {
-  modal.style.display = "none";
-  document.getElementById("editarProdutoForm").style.display = "block";
-  document.getElementById("modalImage").src = "";
-};
-
-window.onclick = (e) => {
-  if (e.target === modal) {
-    modal.style.display = "none";
-    document.getElementById("editarProdutoForm").style.display = "block";
-    document.getElementById("modalImage").src = "";
+  // Exibir pré-visualização das imagens atuais
+  const todasImagens = [];
+  if (p.image) todasImagens.push(p.image);
+  if (p.images && p.images.length) todasImagens.push(...p.images);
+  const uniqueImagens = [...new Set(todasImagens)];
+  const previewDiv = document.getElementById("previewImagens");
+  if (previewDiv) {
+    previewDiv.innerHTML = uniqueImagens.map(url => `
+      <img src="${url}" class="img-preview">
+    `).join("");
   }
-};
+
+  // Limpar input de arquivo anterior
+  const fileInput = document.getElementById("modalImages");
+  if (fileInput) fileInput.value = "";
+
+  modal.style.display = "flex";
+}
+
+// Pré-visualização ao selecionar novas imagens
+const modalImagesInput = document.getElementById("modalImages");
+if (modalImagesInput) {
+  modalImagesInput.addEventListener("change", (e) => {
+    const files = Array.from(e.target.files);
+    const previewDiv = document.getElementById("previewImagens");
+    if (!previewDiv) return;
+    // Limpa prévia atual (mostra apenas as novas selecionadas)
+    previewDiv.innerHTML = "";
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = document.createElement("img");
+        img.src = ev.target.result;
+        img.classList.add("img-preview");
+        previewDiv.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+}
 
 /* =========================
-   SALVAR EDIÇÃO
+   SALVAR EDIÇÃO (COM OU SEM NOVAS IMAGENS)
 ========================= */
 formEditar.addEventListener("submit", async e => {
   e.preventDefault();
@@ -342,31 +353,140 @@ formEditar.addEventListener("submit", async e => {
   }
 
   const id = document.getElementById("modalId").value;
-  const dados = {
-    name: document.getElementById("modalName").value,
-    description: document.getElementById("modalDescription").value,
-    price1: document.getElementById("modalPrice1").value,
-    price2: document.getElementById("modalPrice2").value,
-    stock: document.getElementById("modalStock").value,
-    category: document.getElementById("modalCategory").value,
-    image: document.getElementById("modalImageURL").value
+  const imageFiles = document.getElementById("modalImages").files;
+  const temNovasImagens = imageFiles.length > 0;
+
+  let url = `${API_BASE}/api/products/${id}`;
+  let options = {
+    method: "PUT",
+    headers: { "x-auth-token": token }
   };
 
-  const res = await fetch(`${API_BASE}/api/products/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "x-auth-token": token
-    },
-    body: JSON.stringify(dados)
-  });
+  if (temNovasImagens) {
+    // Enviar como FormData
+    const formData = new FormData();
+    formData.append("name", document.getElementById("modalName").value);
+    formData.append("description", document.getElementById("modalDescription").value);
+    formData.append("price1", document.getElementById("modalPrice1").value);
+    formData.append("price2", document.getElementById("modalPrice2").value);
+    formData.append("stock", document.getElementById("modalStock").value);
+    formData.append("category", document.getElementById("modalCategory").value);
+    // Adiciona as imagens
+    for (let i = 0; i < imageFiles.length; i++) {
+      formData.append("images", imageFiles[i]);
+    }
+    options.body = formData;
+    // Não setar Content-Type
+  } else {
+    // Enviar como JSON (sem alterar imagens)
+    const dados = {
+      name: document.getElementById("modalName").value,
+      description: document.getElementById("modalDescription").value,
+      price1: document.getElementById("modalPrice1").value,
+      price2: document.getElementById("modalPrice2").value,
+      stock: document.getElementById("modalStock").value,
+      category: document.getElementById("modalCategory").value
+    };
+    options.headers = { "Content-Type": "application/json", "x-auth-token": token };
+    options.body = JSON.stringify(dados);
+  }
 
-  if (res.ok) {
-    modal.style.display = "none";
-    carregarProdutos();
-    carregarTopVendas();
+  try {
+    const res = await fetch(url, options);
+    if (res.ok) {
+      modal.style.display = "none";
+      carregarProdutos();
+      carregarTopVendas();
+      // Limpar campos
+      document.getElementById("modalImages").value = "";
+      document.getElementById("previewImagens").innerHTML = "";
+      alert("✅ Produto atualizado com sucesso!");
+    } else {
+      const error = await res.json();
+      alert("❌ Erro: " + (error.msg || "Não foi possível atualizar"));
+    }
+  } catch (err) {
+    console.error(err);
+    alert("❌ Erro de conexão ao atualizar produto");
   }
 });
+
+/* =========================
+   VISUALIZAR IMAGEM (GALERIA)
+========================= */
+function visualizarImagem(id) {
+  const produto = todosProdutos.find(p => p._id === id);
+  if (!produto) return;
+
+  const imagens = [];
+  if (produto.image) imagens.push(produto.image);
+  if (produto.images && produto.images.length) imagens.push(...produto.images);
+  const imagensUnicas = [...new Set(imagens)];
+  if (imagensUnicas.length === 0) {
+    alert("Este produto não possui imagens.");
+    return;
+  }
+
+  const imagemPrincipal = document.getElementById("imagemPrincipal");
+  const miniaturasDiv = document.getElementById("miniaturas");
+
+  if (!imagemPrincipal || !miniaturasDiv) {
+    console.error("Elementos do modal de visualização não encontrados");
+    return;
+  }
+
+  imagemPrincipal.src = imagensUnicas[0];
+  miniaturasDiv.innerHTML = imagensUnicas.map(img => `
+    <img
+      src="${img}"
+      class="miniatura"
+      onclick="document.getElementById('imagemPrincipal').src='${img}'"
+      style="width: 60px; height: 60px; object-fit: cover; margin: 5px; cursor: pointer; border: 2px solid transparent;"
+      onmouseover="this.style.borderColor='#007bff'"
+      onmouseout="this.style.borderColor='transparent'"
+    >
+  `).join("");
+
+  const visualizarModal = document.getElementById("visualizarModal");
+  if (visualizarModal) visualizarModal.style.display = "flex";
+}
+
+/* =========================
+   FECHAR MODAL DE VISUALIZAÇÃO
+========================= */
+const fecharVisualizar = document.getElementById("fecharVisualizar");
+if (fecharVisualizar) {
+  fecharVisualizar.onclick = () => {
+    const visualizarModal = document.getElementById("visualizarModal");
+    if (visualizarModal) visualizarModal.style.display = "none";
+  };
+}
+
+// Fechar visualização ao clicar fora
+window.onclick = (e) => {
+  const visualizarModal = document.getElementById("visualizarModal");
+  if (e.target === visualizarModal) {
+    visualizarModal.style.display = "none";
+  }
+  const modalEdicao = document.getElementById("modal");
+  if (e.target === modalEdicao) {
+    modalEdicao.style.display = "none";
+    document.getElementById("editarProdutoForm").style.display = "block";
+    document.getElementById("modalImage").src = "";
+  }
+};
+
+/* =========================
+   FECHAR MODAL DE EDIÇÃO
+========================= */
+fecharModal.onclick = () => {
+  modal.style.display = "none";
+  document.getElementById("editarProdutoForm").style.display = "block";
+  document.getElementById("modalImage").src = "";
+  // Limpar preview e input de arquivo
+  document.getElementById("modalImages").value = "";
+  document.getElementById("previewImagens").innerHTML = "";
+};
 
 /* =========================
    EXCLUIR PRODUTO
@@ -388,6 +508,9 @@ excluirBtn.onclick = async () => {
     modal.style.display = "none";
     carregarProdutos();
     carregarTopVendas();
+    alert("✅ Produto excluído com sucesso!");
+  } else {
+    alert("❌ Erro ao excluir produto");
   }
 };
 
