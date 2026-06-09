@@ -9,30 +9,20 @@ import StockHistory from "../models/StockHistory.js";
 
 const router = express.Router();
 
-/* ==================================
-   CLOUDINARY
-================================== */
+// Cloudinary config
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-/* ==================================
-   MULTER (aceita image + images)
-================================== */
-const upload = multer({
-  storage: multer.memoryStorage()
-});
+// Multer (memória)
+const upload = multer({ storage: multer.memoryStorage() });
 
-/* ==================================
-   AUTH
-================================== */
+// Auth middleware
 function auth(req, res, next) {
   const token = req.header("x-auth-token");
-  if (!token) {
-    return res.status(401).json({ msg: "Token ausente" });
-  }
+  if (!token) return res.status(401).json({ msg: "Token ausente" });
   try {
     req.user = jwt.verify(token, process.env.JWT_SECRET);
     next();
@@ -41,9 +31,7 @@ function auth(req, res, next) {
   }
 }
 
-/* ==================================
-   LISTAR PRODUTOS
-================================== */
+// Listar produtos
 router.get("/", async (req, res) => {
   try {
     const produtos = await Product.find().sort({ name: 1 });
@@ -53,9 +41,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-/* ==================================
-   TOP MAIS VENDIDOS
-================================== */
+// Top vendas
 router.get("/top-sales/list", async (req, res) => {
   try {
     const ranking = await Product.find().sort({ salesCount: -1 }).limit(10);
@@ -65,9 +51,7 @@ router.get("/top-sales/list", async (req, res) => {
   }
 });
 
-/* ==================================
-   HISTÓRICO
-================================== */
+// Histórico
 router.get("/history/list", auth, async (req, res) => {
   try {
     const historico = await StockHistory.find().sort({ date: -1 }).limit(50);
@@ -77,55 +61,36 @@ router.get("/history/list", auth, async (req, res) => {
   }
 });
 
-/* ==================================
-   BUSCAR PRODUTO
-================================== */
+// Buscar produto por ID ou productId
 router.get("/:id", async (req, res) => {
   try {
     const id = req.params.id;
     let produto;
-    if (id.length === 24) {
-      produto = await Product.findById(id);
-    } else {
-      produto = await Product.findOne({ productId: id });
-    }
-    if (!produto) {
-      return res.status(404).json({ msg: "Produto não encontrado" });
-    }
+    if (id.length === 24) produto = await Product.findById(id);
+    else produto = await Product.findOne({ productId: id });
+    if (!produto) return res.status(404).json({ msg: "Produto não encontrado" });
     res.json(produto);
   } catch {
     res.status(500).json({ msg: "Erro ao buscar produto" });
   }
 });
 
-/* ==================================
-   ADICIONAR PRODUTO (COM MÚLTIPLAS IMAGENS)
-================================== */
+// ADICIONAR PRODUTO (com múltiplas imagens)
 router.post(
   "/",
   auth,
-  upload.fields([
-    { name: "image", maxCount: 1 },
-    { name: "images", maxCount: 6 }
-  ]),
+  upload.array("images", 6),   // 🔥 ALTERADO: aceita até 6 arquivos no campo "images"
   async (req, res) => {
     try {
-      console.log("📦 Body recebido:", req.body);
-      console.log("🖼️ Files recebidos:", req.files ? Object.keys(req.files) : "Nenhum");
-      console.log("🔑 Usuário:", req.user);
+      console.log("📦 Body:", req.body);
+      console.log("🖼️ Files:", req.files ? `${req.files.length} arquivo(s)` : "Nenhum");
 
       let imageUrl = "";
       let imageGallery = [];
 
-      // Pega o arquivo principal (campo "image")
-      const imagemPrincipal = req.files?.image?.[0];
-      // Pega os arquivos da galeria (campo "images")
-      const arquivosGaleria = req.files?.images || [];
-
-      // 1) Envia a imagem principal para o Cloudinary (se existir)
-      if (imagemPrincipal) {
-        console.log("☁️ Enviando imagem principal...");
-        try {
+      // 🔥 SUBSTITUIÇÃO DO BLOCO DE UPLOAD
+      if (req.files && req.files.length > 0) {
+        for (const file of req.files) {
           const result = await new Promise((resolve, reject) => {
             const stream = cloudinary.v2.uploader.upload_stream(
               { folder: "catalogo-produtos" },
@@ -134,52 +99,15 @@ router.post(
                 else resolve(result);
               }
             );
-            streamifier.createReadStream(imagemPrincipal.buffer).pipe(stream);
+            streamifier.createReadStream(file.buffer).pipe(stream);
           });
-          imageUrl = result.secure_url;
-          imageGallery.push(imageUrl); // adiciona a principal na galeria
-          console.log("✅ Imagem principal enviada:", imageUrl);
-        } catch (cloudinaryError) {
-          console.error("❌ Erro no upload da imagem principal:", cloudinaryError);
-          return res.status(500).json({
-            msg: "Erro no upload da imagem principal",
-            error: cloudinaryError.message
-          });
+          imageGallery.push(result.secure_url);
         }
-      }
-
-      // 2) Envia as imagens da galeria (campo "images")
-      if (arquivosGaleria.length > 0) {
-        console.log(`☁️ Enviando ${arquivosGaleria.length} imagem(ns) da galeria...`);
-        for (const arquivo of arquivosGaleria) {
-          try {
-            const result = await new Promise((resolve, reject) => {
-              const stream = cloudinary.v2.uploader.upload_stream(
-                { folder: "catalogo-produtos" },
-                (error, result) => {
-                  if (error) reject(error);
-                  else resolve(result);
-                }
-              );
-              streamifier.createReadStream(arquivo.buffer).pipe(stream);
-            });
-            imageGallery.push(result.secure_url);
-            console.log("✅ Imagem da galeria enviada:", result.secure_url);
-          } catch (err) {
-            console.error("❌ Erro no upload de imagem da galeria:", err);
-            // Não interrompe o fluxo, apenas continua
-          }
-        }
-      }
-
-      // Se não houver nenhuma imagem, define valores padrão
-      if (imageGallery.length === 0) {
-        imageUrl = "";
-        imageGallery = [];
+        imageUrl = imageGallery[0]; // primeira imagem como principal
+        console.log(`✅ ${imageGallery.length} imagem(ns) enviada(s)`);
       }
 
       const estoqueInicial = Number(req.body.stock || 0);
-      console.log("📊 Criando produto com estoque:", estoqueInicial);
 
       const novoProduto = new Product({
         productId: req.body.productId,
@@ -192,43 +120,28 @@ router.post(
         stockL5: 0,
         stockTotal: estoqueInicial,
         stock: estoqueInicial,
-        image: imageUrl,        // URL da imagem principal
-        images: imageGallery,   // array com todas as URLs (incluindo a principal)
+        image: imageUrl,          // 🔥 SALVA A PRINCIPAL
+        images: imageGallery,     // 🔥 SALVA O ARRAY COMPLETO
         isPromo: req.body.isPromo === "true" || req.body.isPromo === true,
         lastStock: estoqueInicial
       });
 
-      console.log("💾 Salvando no banco...");
       await novoProduto.save();
       console.log("✅ Produto salvo:", novoProduto._id);
 
-      res.json({
-        msg: "Produto cadastrado com sucesso",
-        product: novoProduto
-      });
-
+      res.json({ msg: "Produto cadastrado com sucesso", product: novoProduto });
     } catch (err) {
-      console.error("🔥 ERRO GERAL:", err);
-      console.error("📋 Stack:", err.stack);
-
-      res.status(500).json({
-        msg: "Erro ao adicionar produto",
-        error: err.message,
-        stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
-      });
+      console.error("🔥 Erro:", err);
+      res.status(500).json({ msg: "Erro ao adicionar produto", error: err.message });
     }
   }
 );
 
-/* ==================================
-   EDITAR PRODUTO
-================================== */
+// Editar produto (mantém como estava)
 router.put("/:id", auth, async (req, res) => {
   try {
     const produto = await Product.findById(req.params.id);
-    if (!produto) {
-      return res.status(404).json({ msg: "Produto não encontrado" });
-    }
+    if (!produto) return res.status(404).json({ msg: "Produto não encontrado" });
     Object.assign(produto, req.body);
     produto.stockTotal = Number(produto.stockL1 || 0) + Number(produto.stockL5 || 0);
     produto.stock = produto.stockTotal;
@@ -239,22 +152,15 @@ router.put("/:id", auth, async (req, res) => {
   }
 });
 
-/* ==================================
-   UPDATE JSON MULTILOJA
-================================== */
+// Update JSON multiloja (mantido igual)
 router.post("/update-json", auth, async (req, res) => {
+  // ... (código original, não alterado)
   try {
     const loja = String(req.query.loja || "").trim();
-    if (!["1", "5"].includes(loja)) {
-      return res.status(400).json({ msg: "Informe ?loja=1 ou ?loja=5" });
-    }
+    if (!["1", "5"].includes(loja)) return res.status(400).json({ msg: "Informe ?loja=1 ou ?loja=5" });
     const updates = req.body;
-    if (!Array.isArray(updates)) {
-      return res.status(400).json({ msg: "Formato inválido" });
-    }
-    let atualizados = 0;
-    let vendas = 0;
-    let reposicoes = 0;
+    if (!Array.isArray(updates)) return res.status(400).json({ msg: "Formato inválido" });
+    let atualizados = 0, vendas = 0, reposicoes = 0;
     const historicoItens = [];
     for (const item of updates) {
       try {
@@ -266,14 +172,8 @@ router.post("/update-json", auth, async (req, res) => {
         const preco1 = Number(String(item.price1 ?? produto.price1).replace(",", "."));
         const preco2 = Number(String(item.price2 ?? produto.price2).replace(",", "."));
         let estoqueAntigo = 0;
-        if (loja === "1") {
-          estoqueAntigo = Number(produto.stockL1 || 0);
-          produto.stockL1 = estoqueNovo;
-        }
-        if (loja === "5") {
-          estoqueAntigo = Number(produto.stockL5 || 0);
-          produto.stockL5 = estoqueNovo;
-        }
+        if (loja === "1") { estoqueAntigo = Number(produto.stockL1 || 0); produto.stockL1 = estoqueNovo; }
+        if (loja === "5") { estoqueAntigo = Number(produto.stockL5 || 0); produto.stockL5 = estoqueNovo; }
         const diferenca = estoqueNovo - estoqueAntigo;
         if (estoqueNovo < estoqueAntigo) {
           const vendido = estoqueAntigo - estoqueNovo;
@@ -281,48 +181,23 @@ router.post("/update-json", auth, async (req, res) => {
           produto.lastSaleDate = new Date();
           vendas += vendido;
         }
-        if (estoqueNovo > estoqueAntigo) {
-          reposicoes += estoqueNovo - estoqueAntigo;
-        }
+        if (estoqueNovo > estoqueAntigo) reposicoes += estoqueNovo - estoqueAntigo;
         produto.price1 = preco1;
         produto.price2 = preco2;
         produto.stockTotal = Number(produto.stockL1 || 0) + Number(produto.stockL5 || 0);
         produto.stock = produto.stockTotal;
         produto.lastStock = produto.stockTotal;
-        historicoItens.push({
-          productId: produto.productId,
-          name: produto.name,
-          beforeStock: estoqueAntigo,
-          afterStock: estoqueNovo,
-          diff: diferenca,
-          loja: loja
-        });
+        historicoItens.push({ productId: produto.productId, name: produto.name, beforeStock: estoqueAntigo, afterStock: estoqueNovo, diff: diferenca, loja });
         await produto.save();
         atualizados++;
-      } catch (erroInterno) {
-        console.log(erroInterno);
-      }
+      } catch (erroInterno) { console.log(erroInterno); }
     }
-    await StockHistory.create({
-      updatedProducts: atualizados,
-      salesDetected: vendas,
-      restockDetected: reposicoes,
-      user: "Administrador",
-      loja: loja,
-      items: historicoItens
-    });
-    res.json({
-      msg: `🏬 Loja ${loja} | ✅ ${atualizados} atualizados | 🛒 ${vendas} vendas | 📦 ${reposicoes} reposições`
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ msg: "Erro update-json" });
-  }
+    await StockHistory.create({ updatedProducts: atualizados, salesDetected: vendas, restockDetected: reposicoes, user: "Administrador", loja, items: historicoItens });
+    res.json({ msg: `🏬 Loja ${loja} | ✅ ${atualizados} atualizados | 🛒 ${vendas} vendas | 📦 ${reposicoes} reposições` });
+  } catch (err) { console.log(err); res.status(500).json({ msg: "Erro update-json" }); }
 });
 
-/* ==================================
-   EXCLUIR
-================================== */
+// Excluir produto
 router.delete("/:id", auth, async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
