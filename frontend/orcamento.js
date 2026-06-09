@@ -167,6 +167,7 @@ function renderCarrinho() {
     listaProdutos.innerHTML += `
       <div class="item-orcamento">
         <strong>${item.nome}</strong>
+
         <p>${item.qtd}x R$ ${item.valor.toFixed(2)}</p>
 
         <button onclick="removerItem(${i})">
@@ -238,8 +239,13 @@ function calcular() {
   /* CARTÃO */
   if (forma === "cartao") {
 
-    if (loja === 1) total = subtotal * 1.20;
-    if (loja === 5) total = subtotal;
+    if (loja === 1) {
+      total = subtotal * 1.20;
+    }
+
+    if (loja === 5) {
+      total = subtotal;
+    }
 
     const valorParcela = total / parcelas;
 
@@ -248,7 +254,7 @@ function calcular() {
   }
 
   document.getElementById("subtotal").innerText =
-    "R$ " + totalBase().toFixed(2);
+    "R$ " + subtotal.toFixed(2);
 
   document.getElementById("totalFinal").innerText =
     "R$ " + total.toFixed(2);
@@ -267,7 +273,7 @@ formaPagamento.onchange = calcular;
 parcelasSelect.onchange = calcular;
 
 /* ===============================
-   MENSAGEM PREMIUM WHATSAPP
+   GERAR MENSAGEM BONITA
 =================================*/
 function gerarMensagem() {
 
@@ -286,41 +292,28 @@ function gerarMensagem() {
   const parcelas =
     document.getElementById("parcelado").innerText;
 
-  let formaTexto = "";
-
-  if (forma === "avista") formaTexto = "À Vista";
-  if (forma === "carne") formaTexto = "Carnê";
-  if (forma === "cartao") formaTexto = "Cartão";
-
-  let texto = "";
-  texto += "✨ *TEIXEIRA MÓVEIS & ELETRO* ✨\n";
-  texto += "━━━━━━━━━━━━━━━━━━━━━━\n";
-  texto += "📄 *ORÇAMENTO PERSONALIZADO*\n";
-  texto += "━━━━━━━━━━━━━━━━━━━━━━\n\n";
+  let texto = `✨ *TEIXEIRA MÓVEIS & ELETRO* ✨\n`;
+  texto += `━━━━━━━━━━━━━━━━━━\n\n`;
 
   texto += `👤 *Cliente:* ${cliente}\n`;
-  texto += `🏬 *Loja:* ${loja}\n`;
-  texto += `📅 *Data:* ${new Date().toLocaleDateString("pt-BR")}\n\n`;
+  texto += `🏬 *Loja:* ${loja}\n\n`;
 
-  texto += "🛍️ *ITENS SELECIONADOS*\n";
-  texto += "──────────────────────\n";
+  texto += `🛍️ *PRODUTOS ESCOLHIDOS*\n\n`;
 
   carrinho.forEach((item, i) => {
-    texto += `${i + 1}️⃣ ${item.nome}\n`;
-    texto += `   ▸ Quantidade: ${item.qtd}\n`;
-    texto += `   ▸ Unitário: R$ ${item.valor.toFixed(2)}\n`;
-    texto += `   ▸ Total Item: R$ ${(item.valor * item.qtd).toFixed(2)}\n\n`;
+    texto += `${i + 1}. ${item.nome}\n`;
+    texto += `   ▸ Qtd: ${item.qtd}\n`;
+    texto += `   ▸ Valor: R$ ${item.valor.toFixed(2)}\n\n`;
   });
 
-  texto += "━━━━━━━━━━━━━━━━━━━━━━\n";
-  texto += `💰 *VALOR FINAL:* ${total}\n`;
-  texto += `💳 *Pagamento:* ${formaTexto}\n`;
-  texto += `📌 *Condição:* ${parcelas}\n`;
-  texto += "━━━━━━━━━━━━━━━━━━━━━━\n\n";
+  texto += `━━━━━━━━━━━━━━━━━━\n\n`;
 
-  texto += "📲 Responda esta mensagem para finalizar.\n";
-  texto += "🙏 Obrigado pela preferência!\n";
-  texto += "💙 Teixeira Móveis & Eletro";
+  texto += `💰 *TOTAL:* ${total}\n`;
+  texto += `💳 *Pagamento:* ${forma.toUpperCase()}\n`;
+  texto += `📌 *Condição:* ${parcelas}\n\n`;
+
+  texto += `📲 Fale conosco e finalize seu pedido!\n`;
+  texto += `🙏 Obrigado pela preferência.`;
 
   document.getElementById("mensagemFinal").value = texto;
 }

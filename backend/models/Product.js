@@ -42,9 +42,9 @@ const ProductSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  image: {
-    type: String,
-    default: ""
+  images: {
+  type: [String],
+  default: []
   },
   isPromo: {
     type: Boolean,

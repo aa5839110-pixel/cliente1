@@ -51,12 +51,13 @@ async function carregarProdutos() {
     isVendedorExterno = localStorage.getItem("isVendedorExterno") === "true";
 
     if (isVendedorExterno) {
-      // Aplica +20% no price1 (e opcionalmente no price2 se quiser)
+      // Aplica +20% no price1 (e opcionalmente no price2)
       produtos = produtos.map(prod => ({
         ...prod,
         price1: prod.price1 * 1.2,
-        price2: prod.price1 * 1.2 // se quiser que tabela2 também tenha o mesmo valor; opcional
+        price2: prod.price1 * 1.2   // tabela 2 recebe o mesmo valor (opcional)
       }));
+      console.log("✅ Preços ajustados com +20% para vendedor externo");
     }
 
     todosProdutos = produtos;
@@ -93,8 +94,11 @@ async function carregarTopVendas() {
 
       return `
         <div class="top-card">
-          <img src="${p.image || 'https://via.placeholder.com/150'}">
-
+          <img
+            src="${p.image || 'https://via.placeholder.com/300'}"
+            class="produto-imagem"
+            onclick="visualizarImagem('${p.image || 'https://via.placeholder.com/300'}')"
+          >
           <div class="top-info">
             <h3>${medalha} ${p.name}</h3>
             <span>${p.salesCount || 0} vendas</span>
@@ -173,32 +177,26 @@ function exibirProdutos(lista) {
 
     return `
       <div class="product-card">
-
-        <img src="${p.image || 'https://via.placeholder.com/300'}">
-
+        <img
+          src="${p.image || 'https://via.placeholder.com/300'}"
+          class="produto-imagem"
+          onclick="visualizarImagem('${p.image || 'https://via.placeholder.com/300'}')"
+        >
         <div class="product-info">
-
           ${alerta}
-
           <h3>${p.name}</h3>
-
           <p>${p.description || "Sem descrição"}</p>
-
           ${precoHTML}
-
           <small>ID: ${p.productId || "-"}</small>
           <small>${p.category || "-"}</small>
-
           <div class="estoque-box ${estoqueClasse}">
             <small>🏬 Loja 1: ${l1}</small>
             <small>🏬 Loja 5: ${l5}</small>
             <small><strong>📦 Total: ${total}</strong></small>
           </div>
-
           <div class="card-buttons">
             ${botoes}
           </div>
-
         </div>
       </div>
     `;
@@ -226,11 +224,10 @@ function atualizarCategorias() {
     )
   ];
 
-  categoriaFiltro.innerHTML =
-    `<option value="">Todas categorias</option>` +
-    categorias.map(cat =>
-      `<option value="${cat}">${cat}</option>`
-    ).join("");
+  categoriaFiltro.innerHTML = `
+    <option value="">Todas categorias</option>
+    ${categorias.map(cat => `<option value="${cat}">${cat}</option>`).join("")}
+  `;
 }
 
 /* =========================
@@ -332,10 +329,35 @@ async function abrirModal(id) {
   modal.style.display = "flex";
 }
 
-fecharModal.onclick = () => modal.style.display = "none";
+/* =========================
+   VISUALIZAR IMAGEM (SEM EDIÇÃO)
+========================= */
+function visualizarImagem(url) {
+  if (!url) return;
 
-window.onclick = e => {
-  if (e.target === modal) modal.style.display = "none";
+  const modal = document.getElementById("modal");
+
+  document.getElementById("modalImage").src = url;
+  document.getElementById("editarProdutoForm").style.display = "none";
+
+  modal.style.display = "flex";
+}
+
+/* =========================
+   FECHAR MODAL (CORRIGIDO)
+========================= */
+fecharModal.onclick = () => {
+  modal.style.display = "none";
+  document.getElementById("editarProdutoForm").style.display = "block";
+  document.getElementById("modalImage").src = "";
+};
+
+window.onclick = (e) => {
+  if (e.target === modal) {
+    modal.style.display = "none";
+    document.getElementById("editarProdutoForm").style.display = "block";
+    document.getElementById("modalImage").src = "";
+  }
 };
 
 /* =========================

@@ -1,7 +1,7 @@
 /* ======================================================
-   MAIN.JS PROFISSIONAL - ORGANIZADO E COMPLETO
+   MAIN.JS PROFISSIONAL - COMPLETO E ATUALIZADO
    Sistema Catálogo Teixeira
-   com detecção de Vendedor Externo (+20% nos preços)
+   com detecção de Vendedor Externo (e-mail específico)
 ====================================================== */
 
 /* ======================================================
@@ -72,7 +72,7 @@ function safeJson(res) {
 })();
 
 /* ======================================================
-   LOGIN (COM DETECÇÃO DE VENDEDOR EXTERNO)
+   LOGIN (COM DETECÇÃO DE VENDEDOR EXTERNO POR E-MAIL)
 ====================================================== */
 const loginForm = $("loginForm");
 
@@ -86,16 +86,17 @@ if (loginForm) {
     btn.disabled = true;
     btn.innerText = "Entrando...";
 
+    // Captura o e-mail ANTES da requisição
+    const email = $("email").value.trim();
+    const password = $("password").value.trim();
+
     try {
       const res = await fetch(`${API_BASE}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          email: $("email").value.trim(),
-          password: $("password").value.trim()
-        })
+        body: JSON.stringify({ email, password })
       });
 
       const data = await safeJson(res);
@@ -104,27 +105,27 @@ if (loginForm) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("isAdmin", data.user.isAdmin);
 
-        // 🔥 DETECTA VENDEDOR EXTERNO PELO E-MAIL
-        const email = $("email").value.trim();
-        const isVendedorExterno = email === "vendedor@teixeira.com" || email.includes("@vendedor");
-        // Exemplos alternativos:
-        // const isVendedorExterno = email.endsWith("@externo.com");
-        // const isVendedorExterno = email === "joao@vendedor.com";
+        // 🔥 DETECTA VENDEDOR EXTERNO PELO E-MAIL FIXO
+        // Altere o e-mail abaixo conforme necessário
+        const isVendedorExterno = (email === "vendedor@gmail.com");
 
         if (isVendedorExterno) {
           localStorage.setItem("isVendedorExterno", "true");
+          console.log("✅ Vendedor externo detectado. Flag salva.");
         } else {
           localStorage.removeItem("isVendedorExterno");
+          console.log("❌ Usuário comum. Flag removida.");
         }
 
-        window.location.href =
-          data.user.isAdmin ? "painel.html" : "produtos.html";
+        // Redireciona
+        window.location.href = data.user.isAdmin ? "painel.html" : "produtos.html";
 
       } else {
         msg.innerText = data.msg || "Erro no login";
       }
 
-    } catch {
+    } catch (err) {
+      console.error(err);
       msg.innerText = "Erro de conexão.";
     }
 
