@@ -49,7 +49,7 @@ const formProduto = document.getElementById("productForm");
 const formPromo = document.getElementById("promoForm");
 
 // ===============================
-// 📤 CADASTRAR PRODUTO
+// 📤 CADASTRAR PRODUTO (COM MÚLTIPLAS IMAGENS)
 // ===============================
 if (formProduto) {
   formProduto.addEventListener("submit", async function (e) {
@@ -57,8 +57,7 @@ if (formProduto) {
 
     const btnSubmit = formProduto.querySelector('button[type="submit"]');
     const currentToken = localStorage.getItem("token");
-    
-    // Verificar token
+
     if (!currentToken) {
       alert("❌ Você não está autenticado!\nFaça login novamente.");
       window.location.href = "login.html";
@@ -76,7 +75,9 @@ if (formProduto) {
       const price2 = document.getElementById("price2").value;
       const stock = document.getElementById("stock").value;
       const category = document.getElementById("category").value.trim();
-      const imageFile = document.getElementById("image").files[0];
+      
+      // 🔥 ALTERAÇÃO AQUI: pegar o input com id="images" (multiple)
+      const imageFiles = document.getElementById("images").files;
 
       // Validações
       if (!productId || !name || !category) {
@@ -93,8 +94,8 @@ if (formProduto) {
         return;
       }
 
-      if (!imageFile) {
-        alert("❌ Selecione uma imagem!");
+      if (imageFiles.length === 0) {
+        alert("❌ Selecione pelo menos uma imagem!");
         btnSubmit.disabled = false;
         btnSubmit.innerText = "💾 Adicionar Produto";
         return;
@@ -111,10 +112,19 @@ if (formProduto) {
       formData.append("stockL1", stock);
       formData.append("stockL5", "0");
       formData.append("category", category);
-      formData.append("image", imageFile);
       formData.append("isPromo", "false");
 
-      // Mostrar o que está sendo enviado
+      // 🔥 Enviar todas as imagens (campo "images")
+      for (let i = 0; i < imageFiles.length; i++) {
+        formData.append("images", imageFiles[i]);
+      }
+
+      // Opcional: enviar também a primeira como "image" para compatibilidade
+      if (imageFiles.length > 0) {
+        formData.append("image", imageFiles[0]);
+      }
+
+      // Debug
       let dadosDebug = "📦 DADOS ENVIADOS:\n\n";
       for (let [key, value] of formData.entries()) {
         if (value instanceof File) {
@@ -133,12 +143,10 @@ if (formProduto) {
       });
 
       console.log("📡 STATUS:", res.status);
-      
-      // PEGAR RESPOSTA COMO TEXTO
+
       const responseText = await res.text();
       console.log("📄 RESPOSTA BRUTA:", responseText);
 
-      // Tentar converter para JSON
       let data;
       try {
         data = JSON.parse(responseText);
@@ -150,11 +158,13 @@ if (formProduto) {
         return;
       }
 
-      // Verificar sucesso
       if (res.ok) {
         alert("✅ " + (data.msg || "Produto cadastrado com sucesso!"));
         console.log("✅ PRODUTO CRIADO:", data);
         formProduto.reset();
+        // Limpar preview de imagens, se houver
+        const fileInput = document.getElementById("images");
+        if (fileInput) fileInput.value = "";
       } else if (res.status === 401) {
         alert("❌ Sessão expirada!\nFaça login novamente.");
         localStorage.removeItem("token");
@@ -176,12 +186,12 @@ if (formProduto) {
 }
 
 // ===============================
-// 🔥 CADASTRAR PROMOÇÃO
+// 🔥 CADASTRAR PROMOÇÃO (também com múltiplas imagens)
 // ===============================
 if (formPromo) {
   formPromo.addEventListener("submit", async function (e) {
     e.preventDefault();
-    
+
     const btnSubmit = formPromo.querySelector('button[type="submit"]');
     const currentToken = localStorage.getItem("token");
 
@@ -198,6 +208,15 @@ if (formPromo) {
       const formData = new FormData(formPromo);
       formData.append("isPromo", "true");
 
+      // Se houver campo de imagens na promoção, também adaptar
+      const promoImages = document.getElementById("promoImages")?.files;
+      if (promoImages && promoImages.length > 0) {
+        for (let i = 0; i < promoImages.length; i++) {
+          formData.append("images", promoImages[i]);
+        }
+        if (promoImages[0]) formData.append("image", promoImages[0]);
+      }
+
       const res = await fetch(API, {
         method: "POST",
         headers: { "x-auth-token": currentToken },
@@ -206,7 +225,7 @@ if (formPromo) {
 
       const responseText = await res.text();
       console.log("📄 Resposta promo:", responseText);
-      
+
       let data;
       try {
         data = JSON.parse(responseText);
@@ -217,6 +236,8 @@ if (formPromo) {
       if (res.ok) {
         alert("✅ Promoção cadastrada!");
         formPromo.reset();
+        const fileInput = document.getElementById("promoImages");
+        if (fileInput) fileInput.value = "";
       } else {
         alert("❌ " + (data.msg || "Erro"));
       }
