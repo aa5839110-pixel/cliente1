@@ -114,14 +114,9 @@ if (formProduto) {
       formData.append("category", category);
       formData.append("isPromo", "false");
 
-      // 🔥 Enviar todas as imagens (campo "images")
+      // 🔥 Enviar de 1 até 6 imagens
       for (let i = 0; i < imageFiles.length; i++) {
         formData.append("images", imageFiles[i]);
-      }
-
-      // Opcional: enviar também a primeira como "image" para compatibilidade
-      if (imageFiles.length > 0) {
-        formData.append("image", imageFiles[0]);
       }
 
       // Debug
