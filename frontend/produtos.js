@@ -147,7 +147,23 @@ function exibirProdutos(lista) {
         <div class="product-info">
           ${alerta}
           <h3>${p.name}</h3>
-          <p>${p.description || "Sem descrição"}</p>
+          <p class="descricao-curta">
+            ${
+              p.description && p.description.length > 120
+                ? p.description.substring(0, 120) + "..."
+                : p.description || "Sem descrição"
+            }
+          </p>
+
+          ${
+            p.description && p.description.length > 120
+              ? `
+                <a href="#" onclick="mostrarDescricao('${p._id}'); return false;">
+                  Ler mais
+                </a>
+              `
+              : ""
+          }
           ${precoHTML}
           <small>ID: ${p.productId || "-"}</small>
           <small>${p.category || "-"}</small>
@@ -161,6 +177,28 @@ function exibirProdutos(lista) {
       </div>
     `;
   }).join("");
+}
+
+function mostrarDescricao(id) {
+
+  const produto =
+    todosProdutos.find(p => p._id === id);
+
+  if (!produto) return;
+
+  const texto =
+`
+${produto.name}
+
+${produto.description}
+
+${produto.obs || ""}
+`;
+
+  document.getElementById("modalDescription").value =
+    texto;
+
+  modal.style.display = "flex";
 }
 
 /* =========================
@@ -224,6 +262,7 @@ async function abrirModal(id) {
   document.getElementById("modalId").value = p._id;
   document.getElementById("modalName").value = p.name;
   document.getElementById("modalDescription").value = p.description;
+  document.getElementById("modalObs").value = p.obs || "";
   document.getElementById("modalPrice1").value = p.price1;
   document.getElementById("modalPrice2").value = p.price2;
   document.getElementById("modalStock").value = p.stockTotal || p.stock;
@@ -277,6 +316,7 @@ formEditar.addEventListener("submit", async e => {
     const formData = new FormData();
     formData.append("name", document.getElementById("modalName").value);
     formData.append("description", document.getElementById("modalDescription").value);
+    formData.append("obs", document.getElementById("modalObs").value);
     formData.append("price1", document.getElementById("modalPrice1").value);
     formData.append("price2", document.getElementById("modalPrice2").value);
     formData.append("stock", document.getElementById("modalStock").value);
@@ -287,6 +327,7 @@ formEditar.addEventListener("submit", async e => {
     const dados = {
       name: document.getElementById("modalName").value,
       description: document.getElementById("modalDescription").value,
+      obs: document.getElementById("modalObs").value,
       price1: document.getElementById("modalPrice1").value,
       price2: document.getElementById("modalPrice2").value,
       stock: document.getElementById("modalStock").value,
@@ -399,8 +440,9 @@ async function gerarPDFProduto(id) {
     return;
   }
 
+  // Funções extrairCor e extrairMedida (mantidas iguais)
   function extrairCor(texto) {
-    const cores = ["branco", "preto", "cinza", "prata", "azul", "vermelho", "verde", "amarelo", "rosa", "marrom", "bege", "laranja", "roxo"];
+    const cores = ["branco", "preto", "cinza", "prata", "azul", "vermelho", "verde", "amarelo", "rosa", "marrom", "bege", "laranja", "roxo", "cinamomo", "off white", "freijo off white"];
     const textoLower = texto.toLowerCase();
     let match = textoLower.match(/cor:?\s*([a-záãâéêíóôúç]+)/i);
     if (match) return match[1].charAt(0).toUpperCase() + match[1].slice(1);
@@ -438,6 +480,7 @@ async function gerarPDFProduto(id) {
   const peso = extrairMedida(textoAnalise, "peso");
   const dataAtual = new Date().toLocaleDateString("pt-BR");
 
+  // Imagens (até 5)
   const imagensProduto = [
     ...(produto.image ? [produto.image] : []),
     ...(produto.images || [])
@@ -447,52 +490,44 @@ async function gerarPDFProduto(id) {
   const principal = imagensExibir[0] || "";
   const secundarias = imagensExibir.slice(1);
 
+  // Layout das miniaturas (agora abaixo da principal, em linha)
   let miniaturasHTML = "";
   if (secundarias.length > 0) {
     miniaturasHTML = `
-      <div style="display: flex; flex-direction: column; gap: 12px;">
-        <div style="display: flex; gap: 12px;">
-          ${secundarias[0] ? `<img src="${secundarias[0]}" style="width:150px; height:150px; object-fit:cover; border-radius:8px;">` : ''}
-          ${secundarias[1] ? `<img src="${secundarias[1]}" style="width:150px; height:150px; object-fit:cover; border-radius:8px;">` : ''}
-        </div>
-        <div style="display: flex; gap: 12px;">
-          ${secundarias[2] ? `<img src="${secundarias[2]}" style="width:150px; height:150px; object-fit:cover; border-radius:8px;">` : ''}
-          ${secundarias[3] ? `<img src="${secundarias[3]}" style="width:150px; height:150px; object-fit:cover; border-radius:8px;">` : ''}
-        </div>
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 30px;">
+        ${secundarias.map(img => `
+          <img src="${img}" style="width:140px; height:140px; object-fit:cover; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+        `).join("")}
       </div>
     `;
   }
 
   const imagensHTML = `
-    <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px;">
-      <div style="flex: 1; min-width: 200px;">
-        <img src="${principal}" style="width:100%; max-height: 300px; object-fit: cover; border-radius: 16px;">
-      </div>
-      <div style="flex: 0.8; min-width: 240px;">
-        ${miniaturasHTML}
-      </div>
+    <div style="text-align: center; margin-bottom: 30px;">
+      <img src="${principal}" style="width:100%; max-width: 400px; max-height: 280px; object-fit: cover; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+      ${miniaturasHTML}
     </div>
   `;
 
-  // Cria o elemento completo
+  // Cria o elemento (largura reduzida para 650px)
   const contentDiv = document.createElement("div");
-  contentDiv.style.width = "750px";
+  contentDiv.style.width = "650px";
   contentDiv.style.margin = "0 auto";
   contentDiv.style.background = "white";
   contentDiv.style.fontFamily = "'Segoe UI', Arial, sans-serif";
   contentDiv.style.padding = "0";
   contentDiv.innerHTML = `
-    <div style="max-width: 750px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+    <div style="max-width: 650px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
       <div style="background: linear-gradient(135deg, #ffbc02, #e79600); padding: 10px; text-align: center; color: white;">
         <h1 style="margin:0; font-size: 28px;">🏬 TEIXEIRA MÓVEIS</h1>
         <p style="margin:5px 0 0; opacity:0.9;">Qualidade e confiança para sua casa</p>
       </div>
-      <div style="padding: 40px;">
-        <h2 style="margin:0 0 20px; font-size: 22px; color:#1e3c72; border-left:5px solid #ff9800; padding-left:15px;">${produto.name}</h2>
+      <div style="padding: 20px;">
+        <h2 style="margin:0 0 20px; font-size: 20px; color:#1e3c72; border-left:5px solid #ff9800; padding-left:15px;">${produto.name}</h2>
         ${imagensHTML}
-        <div style="background: #f8f9fc; padding: 20px; border-radius: 20px; margin-bottom: 25px;">
+        <div style="background: #f8f9fc; padding: 15px; border-radius: 20px; margin-bottom: 60px;">
           <h3 style="margin:0 0 15px; color:#1e3c72;">📋 Especificações</h3>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 12px;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 10px;">
             <div><strong>🎨 Cor:</strong><br> ${cor}</div>
             <div><strong>📏 Altura:</strong><br> ${altura}</div>
             <div><strong>📐 Largura:</strong><br> ${largura}</div>
@@ -501,25 +536,24 @@ async function gerarPDFProduto(id) {
           </div>
         </div>
         <div>
-          <h3 style="color:#1e3c72; border-bottom: 2px solid #ff9800; display: inline-block; margin-bottom: 12px;">📌 MAIS INFORMAÇÕES</h3>
-          <p style="line-height: 1.5; background: #fafafa; padding: 16px; border-radius: 16px; margin-top: 8px;">${produto.description || "Sem descrição adicional"}</p>
+          <h3 style="color:#1e3c72; border-bottom: 2px solid #ff9800; display: inline-block; margin-bottom: 60px;">📌 MAIS INFORMAÇÕES</h3>
+          <p style="line-height: 1.5; background: #fafafa; padding: 16px; border-radius: 16px; margin-top: 30px;">${produto.description || "Sem descrição adicional"}</p>
         </div>
       </div>
-      <div style="background: #1e3c72; color: white; text-align: center; padding: 12px; font-size: 12px;">
+      <div style="background: #1e3c72; color: white; text-align: center; padding: 10px; font-size: 11px;">
         📞 (88) 9XXXX-XXXX | 📧 contato@teixeiramoveis.com | @teixeiramoveis<br>
         Gerado em ${dataAtual}
       </div>
     </div>
   `;
 
-  // Adiciona ao DOM
   document.body.appendChild(contentDiv);
   contentDiv.style.position = "fixed";
   contentDiv.style.top = "0";
   contentDiv.style.left = "0";
   contentDiv.style.zIndex = "-9999";
 
-  // Aguarda imagens carregarem
+  // Aguarda carregamento das imagens
   const imgs = contentDiv.querySelectorAll("img");
   await Promise.all([...imgs].map(img => {
     return new Promise(resolve => {
@@ -530,16 +564,15 @@ async function gerarPDFProduto(id) {
   }));
   await new Promise(r => setTimeout(r, 300));
 
-  // Configurações do PDF
+  // Configuração do PDF
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF("p", "mm", "a4");
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
   const margin = 10; // margem em mm
 
-  // Converte o elemento para canvas
   const canvas = await html2canvas(contentDiv, {
-    scale: 2,
+    scale: 6,
     backgroundColor: "#ffffff",
     useCORS: true,
     logging: false
@@ -551,11 +584,9 @@ async function gerarPDFProduto(id) {
   let heightLeft = imgHeight;
   let position = 0;
 
-  // Adiciona primeira página
   pdf.addImage(imgData, "PNG", margin, position + margin, imgWidth, imgHeight, undefined, "FAST");
   heightLeft -= pageHeight - margin * 2;
 
-  // Adiciona páginas extras se necessário
   while (heightLeft > 0) {
     position = heightLeft - imgHeight;
     pdf.addPage();
@@ -564,8 +595,6 @@ async function gerarPDFProduto(id) {
   }
 
   pdf.save(`${produto.name.replace(/[^a-z0-9]/gi, "_")}.pdf`);
-
-  // Remove o elemento
   document.body.removeChild(contentDiv);
 }
 

@@ -10,6 +10,10 @@ const ProductSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  obs: {
+    type: String,
+    default: ""
+  },
   description: {
     type: String,
     default: ""
@@ -46,7 +50,6 @@ const ProductSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
-
   images: {
     type: [String],
     default: []

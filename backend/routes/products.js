@@ -112,6 +112,7 @@ router.post(
         productId: req.body.productId,
         name: req.body.name,
         description: req.body.description || "",
+        obs: req.body.obs || "",
         category: req.body.category,
         price1: Number(req.body.price1 || 0),
         price2: Number(req.body.price2 || 0),
@@ -153,6 +154,7 @@ router.put(
       // Atualiza os campos de texto (se vierem no body)
       if (req.body.name !== undefined) produto.name = req.body.name;
       if (req.body.description !== undefined) produto.description = req.body.description;
+      if (req.body.obs !== undefined) produto.obs = req.body.obs;
       if (req.body.price1 !== undefined) produto.price1 = Number(req.body.price1);
       if (req.body.price2 !== undefined) produto.price2 = Number(req.body.price2);
       if (req.body.stock !== undefined) {
