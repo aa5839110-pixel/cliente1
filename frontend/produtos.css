@@ -434,6 +434,25 @@ header a:hover{
   border: 1px solid #ccc;
 }
 
+.descricao-curta {
+  max-height: 60px;
+  overflow: hidden;
+  transition: .3s;
+}
+
+.descricao-curta.expandida {
+  max-height: 500px;
+}
+
+.btn-ler-mais {
+  border: none;
+  background: none;
+  color: #007bff;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 5px;
+}
+
 /* =========================
    RESPONSIVO
 ========================= */

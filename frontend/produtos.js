@@ -148,22 +148,15 @@ function exibirProdutos(lista) {
           ${alerta}
           <h3>${p.name}</h3>
           <p class="descricao-curta">
-            ${
-              p.description && p.description.length > 120
-                ? p.description.substring(0, 120) + "..."
-                : p.description || "Sem descrição"
-            }
+            ${p.description || "Sem descrição"}
           </p>
 
-          ${
-            p.description && p.description.length > 120
-              ? `
-                <a href="#" onclick="mostrarDescricao('${p._id}'); return false;">
-                  Ler mais
-                </a>
-              `
-              : ""
-          }
+          <button
+            class="btn-ler-mais"
+            onclick="toggleDescricao(event, this)"
+          >
+            Ler mais
+          </button>
           ${precoHTML}
           <small>ID: ${p.productId || "-"}</small>
           <small>${p.category || "-"}</small>
@@ -179,26 +172,17 @@ function exibirProdutos(lista) {
   }).join("");
 }
 
-function mostrarDescricao(id) {
+function toggleDescricao(event, botao) {
+  event.stopPropagation();
 
-  const produto =
-    todosProdutos.find(p => p._id === id);
+  const descricao = botao.previousElementSibling;
 
-  if (!produto) return;
+  descricao.classList.toggle("expandida");
 
-  const texto =
-`
-${produto.name}
-
-${produto.description}
-
-${produto.obs || ""}
-`;
-
-  document.getElementById("modalDescription").value =
-    texto;
-
-  modal.style.display = "flex";
+  botao.textContent =
+    descricao.classList.contains("expandida")
+      ? "Ler menos"
+      : "Ler mais";
 }
 
 /* =========================
