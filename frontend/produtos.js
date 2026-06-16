@@ -1,4 +1,4 @@
-const API_BASE = "https://catalogo-h0ro.onrender.com";
+const API_BASE = "https://cliente1-jucivan.onrender.com";
 const token = localStorage.getItem("token");
 
 if (!token) {

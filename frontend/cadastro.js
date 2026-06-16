@@ -15,7 +15,7 @@ if (adminStatus !== "true") {
 // ===============================
 // 🌐 API
 // ===============================
-const API = "https://catalogo-h0ro.onrender.com/api/products";
+const API = "https://cliente1-jucivan.onrender.com/api/products";
 
 // ===============================
 // 📑 TROCA DE ABAS

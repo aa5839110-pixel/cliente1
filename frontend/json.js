@@ -11,7 +11,7 @@ if (isAdmin !== "true") window.location.href = "produtos.html";
 // API
 // ===============================
 const API =
-  "https://catalogo-h0ro.onrender.com/api/products/update-json";
+  "https://cliente1-jucivan.onrender.com/api/products/update-json";
 
 // ===============================
 // ELEMENTOS LOJA 1

@@ -2,7 +2,7 @@
    CLIENTE.JS
 ================================= */
 
-const API_BASE = "https://catalogo-h0ro.onrender.com";
+const API_BASE = "https://cliente1-jucivan.onrender.com";
 
 const produtosDiv = document.getElementById("produtos");
 const buscaInput = document.getElementById("busca");

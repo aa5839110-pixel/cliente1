@@ -31,7 +31,7 @@ const __dirname = path.dirname(__filename);
 app.use(
   cors({
     origin: [
-      "https://catalogo-frontend.netlify.app",
+      "https://catalogo-teixeira-moveis-beberibe.netlify.app",
       "http://localhost:5500",
       "http://127.0.0.1:5500",
       "http://localhost:3000"

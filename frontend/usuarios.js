@@ -27,7 +27,7 @@ form.addEventListener("submit", async (e) => {
   status.innerText = "Criando usuário...";
 
   try {
-    const res = await fetch("https://catalogo-h0ro.onrender.com/api/auth/register", {
+    const res = await fetch("https://cliente1-jucivan.onrender.com/api/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

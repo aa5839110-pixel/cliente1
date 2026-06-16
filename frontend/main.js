@@ -7,7 +7,7 @@
 /* ======================================================
    CONFIG
 ====================================================== */
-const API_BASE = "https://catalogo-h0ro.onrender.com";
+const API_BASE = "https://cliente1-jucivan.onrender.com";
 
 /* ======================================================
    HELPERS

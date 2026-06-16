@@ -1,4 +1,4 @@
-const API_BASE = "https://catalogo-h0ro.onrender.com";
+const API_BASE = "https://cliente1-jucivan.onrender.com";
 
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id"); // pega o ID do produto da URL

@@ -1,4 +1,4 @@
-const API_BASE = "https://catalogo-h0ro.onrender.com/api/products";
+const API_BASE = "https://cliente1-jucivan.onrender.com/api/products";
 
 let produtos = [];
 let produtosFiltrados = [];
