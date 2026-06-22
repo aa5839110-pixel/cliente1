@@ -38,12 +38,12 @@ const statusGeral =
 // ===============================
 // EVENTOS
 // ===============================
-btn1.addEventListener("click", () => {
-  enviarArquivo(1);
+btn3.addEventListener("click", () => {
+  enviarArquivo(3);
 });
 
-btn5.addEventListener("click", () => {
-  enviarArquivo(5);
+btn10.addEventListener("click", () => {
+  enviarArquivo(10);
 });
 
 // ===============================

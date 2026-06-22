@@ -524,8 +524,8 @@ async function gerarPDFProduto(id) {
           <p style="line-height: 1.5; background: #fafafa; padding: 16px; border-radius: 16px; margin-top: 30px;">${produto.description || "Sem descrição adicional"}</p>
         </div>
       </div>
-      <div style="background: #1e3c72; color: white; text-align: center; padding: 10px; font-size: 11px;">
-        📞 (xx) xXXXX-XXXX | 📧 xxxxxxxxxxxxxxxxxxxxxxxx | @teixeiramoveisbeberibe<br>
+      <div style="background: #ff9800; color: white; text-align: center; padding: 10px; font-size: 11px;">
+        📞 (85) 99215-7971 | 📧 teixeirabeberibeloja@gmail.com | @teixeiramoveisbeberibe<br>
         Gerado em ${dataAtual}
       </div>
     </div>

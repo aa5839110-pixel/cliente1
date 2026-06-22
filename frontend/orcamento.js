@@ -35,6 +35,7 @@ const listaProdutos = document.getElementById("listaProdutos");
 const lojaSelect = document.getElementById("loja");
 const formaPagamento = document.getElementById("formaPagamento");
 const parcelasSelect = document.getElementById("parcelas");
+const acrescimo20 = document.getElementById("acrescimo20");
 
 /* ===============================
    INICIAR
@@ -206,16 +207,15 @@ function totalBase() {
 =================================*/
 function calcular() {
 
-  const lojaTexto = lojaSelect.value;
-  const forma = formaPagamento.value;
-  const parcelas = Number(parcelasSelect.value);
+ const forma = formaPagamento.value;
+ const parcelas = Number(parcelasSelect.value);
 
-  const subtotal = totalBase();
+ const subtotal = totalBase();
 
-  let total = subtotal;
-  let parcelaTexto = "-";
+ let total = subtotal;
+ let parcelaTexto = "-";
 
-  const loja = lojaTexto.includes("Loja 3") ? 3 : 10;
+ const aplicar20 = acrescimo20.checked;
 
   /* À VISTA */
   if (forma === "avista") {
@@ -225,7 +225,12 @@ function calcular() {
 
   /* CARNÊ */
   if (forma === "carne") {
-    total = subtotal * 1.20;
+
+    total = subtotal;
+
+    if (aplicar20) {
+      total *= 1.20;
+    }
 
     const taxa = tabelaCarne[parcelas];
     const valorParcela = total * taxa;
@@ -239,12 +244,10 @@ function calcular() {
   /* CARTÃO */
   if (forma === "cartao") {
 
-    if (loja === 1) {
-      total = subtotal * 1.20;
-    }
+    total = subtotal;
 
-    if (loja === 5) {
-      total = subtotal;
+    if (aplicar20) {
+      total *= 1.20;
     }
 
     const valorParcela = total / parcelas;
@@ -271,6 +274,7 @@ function calcular() {
 lojaSelect.onchange = calcular;
 formaPagamento.onchange = calcular;
 parcelasSelect.onchange = calcular;
+acrescimo20.onchange = calcular;
 
 /* ===============================
    GERAR MENSAGEM BONITA
