@@ -26,11 +26,11 @@ const ProductSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  stockL1: {
+  stockL3: {
     type: Number,
     default: 0
   },
-  stockL5: {
+  stockL10: {
     type: Number,
     default: 0
   },
@@ -82,13 +82,13 @@ const ProductSchema = new mongoose.Schema({
 ProductSchema.pre("save", function (next) {
   // Versão antiga do Mongoose
   if (typeof next === 'function') {
-    this.stockTotal = Number(this.stockL1 || 0) + Number(this.stockL5 || 0);
+    this.stockTotal = Number(this.stockL3 || 0) + Number(this.stockL10 || 0);
     this.stock = this.stockTotal;
     return next();
   }
   
   // Versão nova do Mongoose (sem next)
-  this.stockTotal = Number(this.stockL1 || 0) + Number(this.stockL5 || 0);
+  this.stockTotal = Number(this.stockL3 || 0) + Number(this.stockL110 || 0);
   this.stock = this.stockTotal;
 });
 

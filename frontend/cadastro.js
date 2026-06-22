@@ -109,8 +109,8 @@ if (formProduto) {
       formData.append("price1", price1);
       formData.append("price2", price2);
       formData.append("stock", stock);
-      formData.append("stockL1", stock);
-      formData.append("stockL5", "0");
+      formData.append("stockL3", stock);
+      formData.append("stockL10", "0");
       formData.append("category", category);
       formData.append("isPromo", "false");
 

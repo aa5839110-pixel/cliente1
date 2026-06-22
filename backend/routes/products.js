@@ -116,8 +116,8 @@ router.post(
         category: req.body.category,
         price1: Number(req.body.price1 || 0),
         price2: Number(req.body.price2 || 0),
-        stockL1: estoqueInicial,
-        stockL5: 0,
+        stockL3: estoqueInicial,
+        stockL10: 0,
         stockTotal: estoqueInicial,
         stock: estoqueInicial,
         image: imageUrl,
@@ -159,8 +159,8 @@ router.put(
       if (req.body.price2 !== undefined) produto.price2 = Number(req.body.price2);
       if (req.body.stock !== undefined) {
         const novoStock = Number(req.body.stock);
-        produto.stockL1 = novoStock;
-        produto.stockTotal = novoStock + Number(produto.stockL5 || 0);
+        produto.stockL3 = novoStock;
+        produto.stockTotal = novoStock + Number(produto.stockL10 || 0);
         produto.stock = produto.stockTotal;
       }
       if (req.body.category !== undefined) produto.category = req.body.category;
@@ -187,7 +187,7 @@ router.put(
       }
 
       // Recalcula campos derivados (estoque total)
-      produto.stockTotal = Number(produto.stockL1 || 0) + Number(produto.stockL5 || 0);
+      produto.stockTotal = Number(produto.stockL3 || 0) + Number(produto.stockL10 || 0);
       produto.stock = produto.stockTotal;
       produto.lastStock = produto.stockTotal;
 
@@ -204,8 +204,8 @@ router.put(
 router.post("/update-json", auth, async (req, res) => {
   try {
     const loja = String(req.query.loja || "").trim();
-    if (!["1", "5"].includes(loja)) {
-      return res.status(400).json({ msg: "Informe ?loja=1 ou ?loja=5" });
+    if (!["3", "10"].includes(loja)) {
+      return res.status(400).json({ msg: "Informe ?loja=3 ou ?loja=10" });
     }
     const updates = req.body;
     if (!Array.isArray(updates)) {
@@ -223,8 +223,8 @@ router.post("/update-json", auth, async (req, res) => {
         const preco1 = Number(String(item.price1 ?? produto.price1).replace(",", "."));
         const preco2 = Number(String(item.price2 ?? produto.price2).replace(",", "."));
         let estoqueAntigo = 0;
-        if (loja === "1") { estoqueAntigo = Number(produto.stockL1 || 0); produto.stockL1 = estoqueNovo; }
-        if (loja === "5") { estoqueAntigo = Number(produto.stockL5 || 0); produto.stockL5 = estoqueNovo; }
+        if (loja === "3") { estoqueAntigo = Number(produto.stockL3 || 0); produto.stockL3 = estoqueNovo; }
+        if (loja === "10") { estoqueAntigo = Number(produto.stockL10 || 0); produto.stockL10 = estoqueNovo; }
         const diferenca = estoqueNovo - estoqueAntigo;
         if (estoqueNovo < estoqueAntigo) {
           const vendido = estoqueAntigo - estoqueNovo;
@@ -235,7 +235,7 @@ router.post("/update-json", auth, async (req, res) => {
         if (estoqueNovo > estoqueAntigo) reposicoes += estoqueNovo - estoqueAntigo;
         produto.price1 = preco1;
         produto.price2 = preco2;
-        produto.stockTotal = Number(produto.stockL1 || 0) + Number(produto.stockL5 || 0);
+        produto.stockTotal = Number(produto.stockL3 || 0) + Number(produto.stockL10 || 0);
         produto.stock = produto.stockTotal;
         produto.lastStock = produto.stockTotal;
         historicoItens.push({

@@ -115,8 +115,8 @@ function exibirProdutos(lista) {
     return;
   }
   container.innerHTML = lista.map(p => {
-    const l1 = Number(p.stockL1 || 0);
-    const l5 = Number(p.stockL5 || 0);
+    const l3 = Number(p.stockL3 || 0);
+    const l10 = Number(p.stockL10 || 0);
     const total = Number(p.stockTotal || p.stock || 0);
     let estoqueClasse = "verde";
     if (total <= 0) estoqueClasse = "vermelho";
@@ -161,8 +161,8 @@ function exibirProdutos(lista) {
           <small>ID: ${p.productId || "-"}</small>
           <small>${p.category || "-"}</small>
           <div class="estoque-box ${estoqueClasse}">
-            <small>🏬 Loja 1: ${l1}</small>
-            <small>🏬 Loja 5: ${l5}</small>
+            <small>🏬 Loja 3: ${l3}</small>
+            <small>🏬 Loja 10: ${l10}</small>
             <small><strong>📦 Total: ${total}</strong></small>
           </div>
           <div class="card-buttons">${botoes}</div>
@@ -525,7 +525,7 @@ async function gerarPDFProduto(id) {
         </div>
       </div>
       <div style="background: #1e3c72; color: white; text-align: center; padding: 10px; font-size: 11px;">
-        📞 (88) 9XXXX-XXXX | 📧 contato@teixeiramoveis.com | @teixeiramoveis<br>
+        📞 (xx) xXXXX-XXXX | 📧 xxxxxxxxxxxxxxxxxxxxxxxx | @teixeiramoveisbeberibe<br>
         Gerado em ${dataAtual}
       </div>
     </div>

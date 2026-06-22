@@ -215,7 +215,7 @@ function calcular() {
   let total = subtotal;
   let parcelaTexto = "-";
 
-  const loja = lojaTexto.includes("Loja 5") ? 5 : 1;
+  const loja = lojaTexto.includes("Loja 3") ? 3 : 10;
 
   /* À VISTA */
   if (forma === "avista") {
