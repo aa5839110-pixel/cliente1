@@ -16,18 +16,18 @@ const API =
 // ===============================
 // ELEMENTOS LOJA 1
 // ===============================
-const file1 = document.getElementById("jsonFile1");
-const btn1 = document.getElementById("uploadBtn1");
-const status1 = document.getElementById("status1");
-const fill1 = document.getElementById("progressFill1");
+const file3 = document.getElementById("jsonFile3");
+const btn3 = document.getElementById("uploadBtn3");
+const status3 = document.getElementById("status3");
+const fill3 = document.getElementById("progressFill3");
 
 // ===============================
 // ELEMENTOS LOJA 5
 // ===============================
-const file5 = document.getElementById("jsonFile5");
-const btn5 = document.getElementById("uploadBtn5");
-const status5 = document.getElementById("status5");
-const fill5 = document.getElementById("progressFill5");
+const file10 = document.getElementById("jsonFile10");
+const btn10 = document.getElementById("uploadBtn10");
+const status10 = document.getElementById("status10");
+const fill10 = document.getElementById("progressFill10");
 
 // ===============================
 // GERAL
@@ -50,10 +50,10 @@ btn5.addEventListener("click", () => {
 // FUNÇÃO PRINCIPAL
 // ===============================
 async function enviarArquivo(loja) {
-  const input = loja === 1 ? file1 : file5;
-  const btn = loja === 1 ? btn1 : btn5;
-  const status = loja === 1 ? status1 : status5;
-  const fill = loja === 1 ? fill1 : fill5;
+  const input = loja === 3 ? file3 : file10;
+  const btn = loja === 3 ? btn3 : btn10;
+  const status = loja === 3 ? status3 : status10;
+  const fill = loja === 3 ? fill3 : fill10;
 
   const file = input.files[0];
 

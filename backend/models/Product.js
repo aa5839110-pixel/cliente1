@@ -88,7 +88,7 @@ ProductSchema.pre("save", function (next) {
   }
   
   // Versão nova do Mongoose (sem next)
-  this.stockTotal = Number(this.stockL3 || 0) + Number(this.stockL110 || 0);
+  this.stockTotal = Number(this.stockL3 || 0) + Number(this.stockL10 || 0);
   this.stock = this.stockTotal;
 });
 
