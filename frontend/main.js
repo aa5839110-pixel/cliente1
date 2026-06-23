@@ -89,6 +89,13 @@ if (loginForm) {
     // Captura o e-mail ANTES da requisição
     const email = $("email").value.trim();
     const password = $("password").value.trim();
+    const deviceId =
+        localStorage.getItem("deviceId") ||
+        crypto.randomUUID();
+
+      localStorage.setItem("deviceId", deviceId);
+
+      console.log("Device ID:", deviceId);
 
     try {
       const res = await fetch(`${API_BASE}/api/auth/login`, {
@@ -96,7 +103,11 @@ if (loginForm) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({
+          email,
+          password,
+          deviceId
+        })
       });
 
       const data = await safeJson(res);

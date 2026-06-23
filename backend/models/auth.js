@@ -31,7 +31,7 @@ router.post("/register", async (req, res) => {
 
 // 📍 Rota de login
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, deviceId } = req.body;
 
   try {
     const user = await User.findOne({ email });
@@ -39,6 +39,19 @@ router.post("/login", async (req, res) => {
 
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(400).json({ msg: "Senha incorreta" });
+
+    // PRIMEIRO LOGIN
+    if (!user.deviceId) {
+      user.deviceId = deviceId;
+      await user.save();
+    }
+
+    // OUTRO APARELHO
+    if (user.deviceId !== deviceId) {
+      return res.status(403).json({
+        msg: "Este usuário já está vinculado a outro dispositivo."
+      });
+    }
 
     const token = jwt.sign(
       { id: user._id, isAdmin: user.isAdmin },
@@ -48,7 +61,12 @@ router.post("/login", async (req, res) => {
 
     res.json({
       token,
-      user: { id: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin }
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin
+      }
     });
   } catch (err) {
     res.status(500).json({ msg: err.message });

@@ -6,14 +6,24 @@ if (!token) {
 }
 
 /* =========================
-   VARIÁVEL GLOBAL
+   VARIÁVEIS GLOBAIS (CORRIGIDAS)
 ========================= */
-let isVendedorExterno = false;
+const isAdmin = localStorage.getItem("isAdmin") === "true";
+let isVendedorExterno = localStorage.getItem("isVendedorExterno") === "true";
 let todosProdutos = [];
 
 /* =========================
+   ESCONDER PAINEL ADMIN PARA USUÁRIO COMUM
+========================= */
+document.addEventListener("DOMContentLoaded", () => {
+  const btnPainel = document.getElementById("btnPainel");
+  if (btnPainel && !isAdmin) {
+    btnPainel.style.display = "none";
+  }
+});
+
+/* =========================
    FUNÇÃO PARA OBTER IMAGEM
-   (prioriza image, depois images[0])
 ========================= */
 function obterImagem(produto) {
   const imagensProduto = [];
@@ -24,22 +34,19 @@ function obterImagem(produto) {
 }
 
 /* =========================
-   ELEMENTOS
+   ELEMENTOS DOM
 ========================= */
 const container = document.getElementById("productsContainer");
 const buscaInput = document.getElementById("busca");
 const categoriaFiltro = document.getElementById("categoriaFiltro");
-
 const modal = document.getElementById("modal");
 const fecharModal = document.getElementById("fecharModal");
-
 const formEditar = document.getElementById("editarProdutoForm");
 const excluirBtn = document.getElementById("excluirProduto");
-
 const topSales = document.getElementById("topSales");
 
 /* =========================
-   SPLASH
+   SPLASH DE CARREGAMENTO
 ========================= */
 window.addEventListener("load", () => {
   setTimeout(() => {
@@ -56,7 +63,6 @@ async function carregarProdutos() {
   try {
     const res = await fetch(`${API_BASE}/api/products`);
     let produtos = await res.json();
-    isVendedorExterno = localStorage.getItem("isVendedorExterno") === "true";
     if (isVendedorExterno) {
       produtos = produtos.map(prod => ({
         ...prod,
@@ -107,7 +113,7 @@ async function carregarTopVendas() {
 }
 
 /* =========================
-   EXIBIR PRODUTOS
+   EXIBIR PRODUTOS (com botão Editar condicional)
 ========================= */
 function exibirProdutos(lista) {
   if (!lista.length) {
@@ -137,7 +143,8 @@ function exibirProdutos(lista) {
       <button onclick="gerarPDFProduto('${p._id}')">📄 Gerar PDF</button>
       <button onclick="copiarTexto('${escapeJs(p.name)}','${p.price1}','${escapeJs(obterImagem(p))}')">📋 Copiar</button>
     `;
-    if (!isVendedorExterno) {
+    // 🔥 APENAS ADMIN VÊ O BOTÃO EDITAR
+    if (isAdmin) {
       botoes += `<button onclick="abrirModal('${p._id}')">✏️ Editar</button>`;
     }
     const imgSrc = p.image || (p.images && p.images[0]) || "";
@@ -150,13 +157,7 @@ function exibirProdutos(lista) {
           <p class="descricao-curta">
             ${p.description || "Sem descrição"}
           </p>
-
-          <button
-            class="btn-ler-mais"
-            onclick="toggleDescricao(event, this)"
-          >
-            Ler mais
-          </button>
+          <button class="btn-ler-mais" onclick="toggleDescricao(event, this)">Ler mais</button>
           ${precoHTML}
           <small>ID: ${p.productId || "-"}</small>
           <small>${p.category || "-"}</small>
@@ -174,19 +175,13 @@ function exibirProdutos(lista) {
 
 function toggleDescricao(event, botao) {
   event.stopPropagation();
-
   const descricao = botao.previousElementSibling;
-
   descricao.classList.toggle("expandida");
-
-  botao.textContent =
-    descricao.classList.contains("expandida")
-      ? "Ler menos"
-      : "Ler mais";
+  botao.textContent = descricao.classList.contains("expandida") ? "Ler menos" : "Ler mais";
 }
 
 /* =========================
-   ESCAPE
+   ESCAPE PARA STRINGS (SEGURANÇA)
 ========================= */
 function escapeJs(texto) {
   return String(texto).replace(/'/g, "\\'").replace(/"/g, "&quot;");
@@ -201,7 +196,7 @@ function atualizarCategorias() {
 }
 
 /* =========================
-   FILTROS
+   FILTROS (BUSCA + CATEGORIA)
 ========================= */
 function aplicarFiltros() {
   const texto = buscaInput.value.toLowerCase();
@@ -218,7 +213,7 @@ buscaInput.addEventListener("input", aplicarFiltros);
 categoriaFiltro.addEventListener("change", aplicarFiltros);
 
 /* =========================
-   TEXTO PARA COPIAR
+   TEXTO PARA COPIAR / COMPARTILHAR
 ========================= */
 function gerarMensagem(nome, p1, imagem) {
   const preco = Number(p1 || 0).toFixed(2).replace(".", ",");
@@ -234,10 +229,10 @@ function compartilharProduto(nome, p1, imagem) {
 }
 
 /* =========================
-   MODAL EDIÇÃO
+   MODAL EDIÇÃO (BLOQUEADO PARA NÃO-ADMIN)
 ========================= */
 async function abrirModal(id) {
-  if (isVendedorExterno) {
+  if (!isAdmin) {
     alert("Acesso negado.");
     return;
   }
@@ -253,7 +248,7 @@ async function abrirModal(id) {
   document.getElementById("modalCategory").value = p.category;
   document.getElementById("modalImageURL").value = p.image;
   document.getElementById("modalImage").src = obterImagem(p);
-  // pré-visualização das imagens atuais
+  // Pré-visualização das imagens atuais
   const todasImagens = [];
   if (p.image) todasImagens.push(p.image);
   if (p.images && p.images.length) todasImagens.push(...p.images);
@@ -288,7 +283,7 @@ if (modalImagesInput) {
 
 formEditar.addEventListener("submit", async e => {
   e.preventDefault();
-  if (isVendedorExterno) {
+  if (!isAdmin) {
     alert("Ação não permitida.");
     return;
   }
@@ -394,7 +389,7 @@ fecharModal.onclick = () => {
 };
 
 excluirBtn.onclick = async () => {
-  if (isVendedorExterno) {
+  if (!isAdmin) {
     alert("Ação não permitida.");
     return;
   }
@@ -415,7 +410,7 @@ excluirBtn.onclick = async () => {
 };
 
 /* =========================
-   GERAR PDF COM EXTRAÇÃO AUTOMÁTICA DE COR, ALTURA, LARGURA, PROFUNDIDADE, PESO
+   GERAR PDF (mantido integralmente)
 ========================= */
 async function gerarPDFProduto(id) {
   const produto = todosProdutos.find(p => p._id === id);
@@ -424,7 +419,7 @@ async function gerarPDFProduto(id) {
     return;
   }
 
-  // Funções extrairCor e extrairMedida (mantidas iguais)
+  // Extração de cor e medidas (mantidas iguais)
   function extrairCor(texto) {
     const cores = ["branco", "preto", "cinza", "prata", "azul", "vermelho", "verde", "amarelo", "rosa", "marrom", "bege", "laranja", "roxo", "cinamomo", "off white", "freijo off white"];
     const textoLower = texto.toLowerCase();
@@ -464,7 +459,6 @@ async function gerarPDFProduto(id) {
   const peso = extrairMedida(textoAnalise, "peso");
   const dataAtual = new Date().toLocaleDateString("pt-BR");
 
-  // Imagens (até 5)
   const imagensProduto = [
     ...(produto.image ? [produto.image] : []),
     ...(produto.images || [])
@@ -474,7 +468,6 @@ async function gerarPDFProduto(id) {
   const principal = imagensExibir[0] || "";
   const secundarias = imagensExibir.slice(1);
 
-  // Layout das miniaturas (agora abaixo da principal, em linha)
   let miniaturasHTML = "";
   if (secundarias.length > 0) {
     miniaturasHTML = `
@@ -493,7 +486,6 @@ async function gerarPDFProduto(id) {
     </div>
   `;
 
-  // Cria o elemento (largura reduzida para 650px)
   const contentDiv = document.createElement("div");
   contentDiv.style.width = "650px";
   contentDiv.style.margin = "0 auto";
@@ -537,7 +529,6 @@ async function gerarPDFProduto(id) {
   contentDiv.style.left = "0";
   contentDiv.style.zIndex = "-9999";
 
-  // Aguarda carregamento das imagens
   const imgs = contentDiv.querySelectorAll("img");
   await Promise.all([...imgs].map(img => {
     return new Promise(resolve => {
@@ -548,34 +539,25 @@ async function gerarPDFProduto(id) {
   }));
   await new Promise(r => setTimeout(r, 300));
 
-  // Configuração do PDF
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF("p", "mm", "a4");
   const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-  const margin = 10; // margem em mm
-
-  const canvas = await html2canvas(contentDiv, {
-    scale: 6,
-    backgroundColor: "#ffffff",
-    useCORS: true,
-    logging: false
-  });
+  const margin = 10;
+  const canvas = await html2canvas(contentDiv, { scale: 6, backgroundColor: "#ffffff", useCORS: true, logging: false });
   const imgData = canvas.toDataURL("image/png");
   const imgWidth = pageWidth - margin * 2;
   const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
   let heightLeft = imgHeight;
   let position = 0;
-
   pdf.addImage(imgData, "PNG", margin, position + margin, imgWidth, imgHeight, undefined, "FAST");
-  heightLeft -= pageHeight - margin * 2;
+  heightLeft -= pdf.internal.pageSize.getHeight() - margin * 2;
 
   while (heightLeft > 0) {
     position = heightLeft - imgHeight;
     pdf.addPage();
     pdf.addImage(imgData, "PNG", margin, position + margin, imgWidth, imgHeight, undefined, "FAST");
-    heightLeft -= pageHeight - margin * 2;
+    heightLeft -= pdf.internal.pageSize.getHeight() - margin * 2;
   }
 
   pdf.save(`${produto.name.replace(/[^a-z0-9]/gi, "_")}.pdf`);
