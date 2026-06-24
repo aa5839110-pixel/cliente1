@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Orçamentos | Catálogo</title>
+  <link rel="stylesheet" href="orcamento.css">
+</head>
+<body>
+
+  <!-- TOPO -->
+  <header class="topo">
+    <div class="logo-area">
+      <h1>💰 Gerador de Orçamentos</h1>
+      <p>Monte vendas rápidas no WhatsApp</p>
+    </div>
+
+    <div class="topo-botoes">
+      <a href="painel.html" class="btn-topo">🏠 Painel</a>
+      <a href="produtos.html" class="btn-topo">📦 Produtos</a>
+    </div>
+  </header>
+
+  <!-- CONTEÚDO -->
+  <main class="container">
+
+    <!-- ESQUERDA -->
+    <section class="box box-form">
+
+      <h2>📋 Novo Orçamento</h2>
+
+      <!-- LOJA -->
+      <div class="grupo">
+        <label>Loja</label>
+        <select id="loja">
+          <option value="Loja 3 - Eletrodomésticos">Loja 3</option>
+        </select>
+      </div>
+
+      <!-- CLIENTE -->
+      <div class="grupo">
+        <label>Nome do Cliente</label>
+        <input type="text" id="cliente" placeholder="Ex: Maria Silva">
+      </div>
+
+      <!-- PRODUTO -->
+      <div class="grupo">
+        <label>Buscar Produto</label>
+        <input type="text" id="buscaProduto" placeholder="Digite nome do produto">
+      </div>
+
+      <div class="grupo">
+        <label>Selecionar Produto</label>
+        <select id="produtoSelect">
+          <option value="">Carregando produtos...</option>
+        </select>
+      </div>
+
+      <!-- PREÇO -->
+      <div class="linha-2">
+
+        <div class="grupo">
+          <label>Preço</label>
+          <input type="number" id="precoProduto" placeholder="0.00">
+        </div>
+
+        <div class="grupo">
+          <label>Qtd</label>
+          <input type="number" id="quantidadeProduto" value="1" min="1">
+        </div>
+
+      </div>
+
+      <button id="addProduto" class="btn-principal">
+        ➕ Adicionar Produto
+      </button>
+
+      <!-- FORMA -->
+      <div class="grupo espacamento">
+
+        <label>
+          <input type="checkbox" id="acrescimo20">
+          Aplicar acréscimo de 20%
+        </label>
+
+        <label>Forma de Pagamento</label>
+
+        <select id="formaPagamento">
+          <option value="avista">À Vista</option>
+          <option value="carne">Carnê</option>
+          <option value="cartao">Cartão</option>
+        </select>
+
+      </div>
+
+      <!-- PARCELAS -->
+      <div class="grupo">
+        <label>Parcelas</label>
+        <select id="parcelas">
+          <option value="3">3x</option>
+          <option value="4">4x</option>
+          <option value="5">5x</option>
+          <option value="6">6x</option>
+          <option value="8">8x</option>
+          <option value="10">10x</option>
+          <option value="12">12x</option>
+          <option value="13">13x</option>
+          <option value="14">14x</option>
+          <option value="15">15x</option>
+        </select>
+      </div>
+
+      <button id="calcularBtn" class="btn-secundario">
+        🧮 Calcular Orçamento
+      </button>
+
+    </section>
+
+
+    <!-- DIREITA -->
+    <section class="box box-resumo">
+
+      <h2>🧾 Resumo da Venda</h2>
+
+      <div id="listaProdutos" class="lista-produtos">
+        <p class="vazio">Nenhum produto adicionado.</p>
+      </div>
+
+      <div class="totais">
+
+        <div class="linha-total">
+          <span>Subtotal:</span>
+          <strong id="subtotal">R$ 0,00</strong>
+        </div>
+
+        <div class="linha-total destaque">
+          <span>Total Final:</span>
+          <strong id="totalFinal">R$ 0,00</strong>
+        </div>
+
+        <div class="linha-total">
+          <span>Parcelas:</span>
+          <strong id="parcelado">-</strong>
+        </div>
+
+      </div>
+
+      <textarea id="mensagemFinal" placeholder="Mensagem pronta aparecerá aqui..."></textarea>
+
+      <div class="acoes">
+
+        <button id="copiarBtn" class="btn-principal">
+          📋 Copiar Mensagem
+        </button>
+
+        <button id="whatsBtn" class="btn-whats">
+          📲 Enviar WhatsApp
+        </button>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="orcamento.js"></script>
+</body>
+</html>

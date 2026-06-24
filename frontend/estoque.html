@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestão de Estoque</title>
+  <link rel="stylesheet" href="gestao.css">
+</head>
+<body>
+
+<script>
+  // 🔐 BLOQUEIO ADMIN
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
+  if (!isAdmin) {
+    alert("Acesso negado");
+    window.location.href = "produtos.html";
+  }
+</script>
+
+<header>
+  <h1>📦 Gestão de Estoque</h1>
+  <a href="admin.html">⬅ Voltar</a>
+</header>
+
+<main>
+
+  <h3>📥 Importar planilha de conferência</h3>
+  <input type="file" id="excelFile" accept=".xlsx, .xls">
+  <button onclick="importarExcel()">Importar</button>
+  <button onclick="salvarConferencia()">💾 Salvar Conferência</button>
+  <input 
+    type="text" 
+    id="searchInput" 
+    placeholder="🔍 Buscar produto..." 
+    oninput="filtrarProdutos()"
+  >
+  <hr>
+
+  <h3>📋 Conferência</h3>
+  <div id="conferenciaList"></div>
+
+  <div class="print-options">
+  <h3>🖨️ Opções de Impressão</h3>
+
+  <label>
+    <input type="radio" name="filtroPrint" value="todos" checked>
+    Todos
+  </label>
+
+  <label>
+    <input type="radio" name="filtroPrint" value="ok">
+    Só OK
+  </label>
+
+  <label>
+    <input type="radio" name="filtroPrint" value="faltando">
+    Só Faltando
+  </label>
+
+  <br><br>
+
+  <label>
+    <input type="radio" name="tipoPrint" value="normal" checked>
+    📄 Impressão Normal
+  </label>
+
+  <label>
+    <input type="radio" name="tipoPrint" value="bobina">
+    🧾 Impressão Bobina
+  </label>
+</div>
+
+  <button onclick="imprimirConferencia()">🖨️ Imprimir</button>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="main.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,86 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body{
+  min-height:100vh;
+  background:linear-gradient(135deg,#0f172a,#111827,#1e293b);
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:30px 20px;
+}
+
+header{
+  text-align:center;
+  margin-bottom:30px;
+}
+
+header h1{
+  font-size:32px;
+}
+
+header p{
+  color:#94a3b8;
+}
+
+.box{
+  width:100%;
+  max-width:600px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:20px;
+  padding:35px;
+  text-align:center;
+  backdrop-filter:blur(10px);
+}
+
+.topo-icon{
+  font-size:50px;
+  color:#f59e0b;
+  margin-bottom:20px;
+}
+
+form{
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+}
+
+input, select{
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:#1e293b;
+  color:#fff;
+}
+
+button{
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:#f59e0b;
+  font-weight:bold;
+  cursor:pointer;
+  transition:.3s;
+}
+
+button:hover{
+  transform:scale(1.03);
+}
+
+#status{
+  margin-top:15px;
+  color:#cbd5e1;
+}
+
+.voltar{
+  display:inline-block;
+  margin-top:20px;
+  color:#38bdf8;
+  text-decoration:none;
+}

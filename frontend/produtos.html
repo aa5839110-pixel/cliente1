@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo de Produtos</title>
+  <link rel="stylesheet" href="produtos.css">
+  <style>
+    /* Estilos temporários para o preview de imagens (adicione ao seu CSS depois) */
+    .preview-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+      margin-bottom: 15px;
+    }
+    .preview-grid img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- SPLASH -->
+  <div id="welcomeScreen">
+    <h1>👋 Bem-vindo</h1>
+    <p>Carregando catálogo...</p>
+  </div>
+
+  <!-- TOPO -->
+  <header>
+    <h1>📦 Catálogo de Produtos</h1>
+    <div class="top-buttons">
+      <a href="painel.html">Painel Admin</a>
+      <a href="promocoe.html" class="promocoes-btn">🔥 Promoções</a>
+      <a href="orcamento.html" class="top-btn destaque">🧾 Orçamentos</a>
+    </div>
+  </header>
+
+  <!-- NOTIFICAÇÕES -->
+  <div id="notificacoes"></div>
+
+  <!-- TOP VENDAS 
+  <section class="top-vendas">
+    <h2>🏆 Mais Vendidos</h2>
+    <div id="topSales"></div>
+  </section>-->
+
+  <!-- FILTROS -->
+  <section class="filtros">
+    <input type="text" id="busca" placeholder="Buscar nome ou ID...">
+    <select id="categoriaFiltro">
+      <option value="">Todas categorias</option>
+    </select>
+  </section>
+
+  <!-- PRODUTOS -->
+  <div class="products-container" id="productsContainer"></div>
+
+  <!-- =========================
+       MODAL EDIÇÃO (COM UPLOAD DE MÚLTIPLAS IMAGENS)
+  ========================= -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span id="fecharModal" class="close">&times;</span>
+      <img id="modalImage" class="modal-img" src="">
+      <form id="editarProdutoForm">
+        <input type="hidden" id="modalId">
+
+        <label>Nome</label>
+        <input type="text" id="modalName">
+
+        <label>Descrição</label>
+        <textarea id="modalDescription"></textarea>
+
+        <label>Observações</label>
+        <textarea id="modalObs"></textarea>
+
+        <label>Tabela 1</label>
+        <input type="number" id="modalPrice1">
+
+        <label>Tabela 2</label>
+        <input type="number" id="modalPrice2">
+
+        <label>Estoque</label>
+        <input type="number" id="modalStock">
+
+        <label>Categoria</label>
+        <input type="text" id="modalCategory">
+
+        <label>Imagem Principal (URL)</label>
+        <input type="text" id="modalImageURL">
+
+        <!-- NOVO CAMPO: UPLOAD MÚLTIPLO DE IMAGENS -->
+        <label>Imagens do Produto (múltiplas)</label>
+        <input type="file" id="modalImages" accept="image/*" multiple>
+        <div id="previewImagens" class="preview-grid"></div>
+        <small>⚠️ Se você selecionar novas imagens, elas SUBSTITUIRÃO todas as imagens atuais do produto. Deixe vazio para manter as imagens existentes.</small>
+
+        <div class="modal-buttons">
+          <button type="submit" class="save">💾 Salvar</button>
+          <button type="button" id="excluirProduto" class="delete">🗑️ Excluir</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================
+       MODAL VISUALIZAÇÃO (GALERIA)
+  ========================= -->
+  <div id="visualizarModal" class="visualizar-modal" style="display: none;">
+    <div class="visualizar-content">
+      <span id="fecharVisualizar" class="close">&times;</span>
+      <img id="imagemPrincipal" class="imagem-principal" src="" alt="Produto">
+      <div id="miniaturas" class="miniaturas"></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="produtos.js"></script>
+  
+  
+</body>
+
+</html>

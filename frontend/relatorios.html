@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Relatórios</title>
+  <link rel="stylesheet" href="relatorios.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<header class="topo">
+  <h1>📊 Painel de Relatórios</h1>
+
+  <nav>
+    <a href="painel.html">Painel</a>
+    <a href="produtos.html">Produtos</a>
+    <a href="cliente.html">Catálogo</a>
+    <a href="relatorios.html" class="ativo">Relatórios</a>
+  </nav>
+</header>
+
+<main class="container">
+
+  <!-- Cards -->
+  <section class="cards">
+
+    <div class="card">
+      <h3>Total Vendido</h3>
+      <p id="totalVendas">0</p>
+    </div>
+
+    <div class="card">
+      <h3>Produtos Zerados</h3>
+      <p id="zerados">0</p>
+    </div>
+
+    <div class="card">
+      <h3>Reposições</h3>
+      <p id="reposicoes">0</p>
+    </div>
+
+    <div class="card">
+      <h3>Total Produtos</h3>
+      <p id="totalProdutos">0</p>
+    </div>
+
+  </section>
+
+  <!-- Gráficos -->
+  <section class="graficos">
+
+    <div class="grafico-box">
+      <h2>🏆 Top Vendidos</h2>
+      <canvas id="graficoTop"></canvas>
+    </div>
+
+    <div class="grafico-box">
+      <h2>📦 Estoque Atual</h2>
+      <canvas id="graficoEstoque"></canvas>
+    </div>
+
+  </section>
+
+  <!-- Alertas -->
+  <section class="listas">
+
+    <div class="lista-box">
+      <h2>⚠️ Comprar Urgente</h2>
+      <div id="comprarUrgente"></div>
+    </div>
+
+    <div class="lista-box">
+      <h2>📅 Últimas Atualizações</h2>
+      <div id="historico"></div>
+    </div>
+
+  </section>
+
+</main>
+
+<script src="relatorios.js"></script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Catálogo</title>
+<link rel="stylesheet" href="login.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<script>
+localStorage.removeItem("token");
+localStorage.removeItem("isAdmin");
+</script>
+
+<body>
+
+<div class="overlay"></div>
+
+<div class="login-box">
+
+<div class="logo-area">
+    <img src="./imagens/logo.png" alt="Logo">
+    <h1>Teixeira Móveis</h1>
+    <p>Catálogo De produtos</p>
+</div>
+
+<form id="loginForm">
+
+<div class="input-group">
+    <i class="fa fa-envelope"></i>
+    <input type="email" id="email" placeholder="Seu email" required>
+</div>
+
+<div class="input-group senha-box">
+    <i class="fa fa-lock"></i>
+    <input type="password" id="password" placeholder="Sua senha" required>
+    <span id="toggleSenha"><i class="fa fa-eye"></i></span>
+</div>
+
+<div class="options">
+<label>
+<input type="checkbox"> Lembrar login
+</label>
+
+<a href="#">Esqueceu a senha?</a>
+</div>
+
+<button type="submit" id="btnLogin">
+<span class="texto-btn">Entrar</span>
+<span class="loading"></span>
+</button>
+
+<p id="msg"></p>
+
+</form>
+
+</div>
+
+<script src="main.js"></script>
+<script src="login.js"></script>
+
+</body>
+</html>

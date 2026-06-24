@@ -1,0 +1,105 @@
+/* === ESTILO GERAL === */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f5f6fa;
+  margin: 0;
+  padding: 20px;
+}
+
+/* TÍTULO */
+h1 {
+  color: #2b2d42;
+  margin-bottom: 20px;
+}
+
+/* INPUT E BOTÃO */
+input[type="file"] {
+  margin-bottom: 10px;
+}
+
+button {
+  background: #2b2d42;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 15px;
+}
+
+button:hover {
+  background: #3d405b;
+}
+
+/* LISTA DE PRODUTOS */
+.item {
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* TEXTO DO PRODUTO */
+.item strong {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+/* RADIO */
+.item label {
+  margin-right: 10px;
+}
+
+/* OBSERVAÇÃO */
+.item input[type="text"] {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* BOTÃO IMPRIMIR */
+button:last-of-type {
+  background: #0088cc;
+}
+
+button:last-of-type:hover {
+  background: #0070aa;
+}
+
+.item.ok {
+  background: #d4edda; /* verde claro */
+  border-left: 5px solid #28a745;
+}
+
+.item.faltando {
+  background: #f8d7da; /* vermelho claro */
+  border-left: 5px solid #dc3545;
+}
+
+.item.ok {
+  background: #d4edda;
+  border-left: 5px solid #28a745;
+}
+
+.item.faltando {
+  background: #f8d7da;
+  border-left: 5px solid #dc3545;
+}
+
+.item {
+  transition: 0.3s;
+}
+
+#searchInput {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}

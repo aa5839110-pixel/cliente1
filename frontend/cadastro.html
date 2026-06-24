@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro de Produtos</title>
+
+<link rel="stylesheet" href="cadastro.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+
+<body>
+
+<header>
+  <h1>Cadastro de Produtos</h1>
+  <p>Adicione produtos normais e promoções</p>
+</header>
+
+<nav class="tabs">
+
+  <button
+    class="tab active"
+    data-tab="produto">
+    Produto
+  </button>
+
+  <button
+    class="tab"
+    data-tab="promo">
+    Promoção
+  </button>
+
+  <a href="painel.html" class="voltar">
+    ← Voltar
+  </a>
+
+</nav>
+
+<main>
+
+  <!-- =========================
+       PRODUTO
+  ========================== -->
+  <section class="box active" id="produto">
+
+    <h2>🛒 Novo Produto</h2>
+
+    <form
+      id="productForm"
+      enctype="multipart/form-data">
+
+      <input
+        type="text"
+        id="productId"
+        name="productId"
+        placeholder="ID Produto"
+        required>
+
+      <input
+        type="text"
+        id="name"
+        name="name"
+        placeholder="Nome"
+        required>
+
+      <input
+        type="text"
+        id="description"
+        name="description"
+        placeholder="Descrição">
+
+      <input
+        type="number"
+        id="price1"
+        name="price1"
+        placeholder="Preço Tabela 1"
+        step="0.01"
+        required>
+
+      <input
+        type="number"
+        id="price2"
+        name="price2"
+        placeholder="Preço Tabela 2"
+        step="0.01"
+        required>
+
+      <input
+        type="number"
+        id="stock"
+        name="stock"
+        placeholder="Estoque"
+        required>
+
+      <input
+        type="text"
+        id="category"
+        name="category"
+        placeholder="Categoria"
+        required>
+
+      <!-- NOVO BLOCO DE IMAGENS -->
+
+      <div class="upload-area">
+
+        <label for="images">
+          📸 Imagens do Produto
+        </label>
+
+        <small>
+          Você pode selecionar até 6 imagens.
+          A primeira será usada como imagem principal.
+        </small>
+
+        <input
+          type="file"
+          id="images"
+          name="images"
+          accept="image/*"
+          multiple
+          required>
+
+      </div>
+
+      <!-- PREVIEW -->
+
+      <div
+        id="previewImages"
+        class="preview-images">
+      </div>
+
+      <button type="submit">
+        💾 Adicionar Produto
+      </button>
+
+    </form>
+
+  </section>
+
+  <!-- =========================
+       PROMOÇÃO
+  ========================== -->
+  <section class="box" id="promo">
+
+    <h2>🔥 Produto em Promoção</h2>
+
+    <form
+      id="promoForm"
+      enctype="multipart/form-data">
+
+      <input
+        type="text"
+        id="promoName"
+        name="name"
+        placeholder="Nome Produto"
+        required>
+
+      <input
+        type="text"
+        id="promoDescription"
+        name="description"
+        placeholder="Descrição">
+
+      <input
+        type="number"
+        id="originalPrice"
+        name="originalPrice"
+        placeholder="Preço Original"
+        step="0.01"
+        required>
+
+      <input
+        type="number"
+        id="salePrice"
+        name="salePrice"
+        placeholder="Preço Promocional"
+        step="0.01"
+        required>
+
+      <input
+        type="text"
+        id="promoCategory"
+        name="category"
+        placeholder="Categoria">
+
+      <input
+        type="file"
+        id="promoImage"
+        name="image"
+        accept="image/*"
+        required>
+
+      <button type="submit">
+        🔥 Adicionar Promoção
+      </button>
+
+    </form>
+
+  </section>
+
+</main>
+
+<script src="cadastro.js"></script>
+
+
+</body>
+</html>
