@@ -2,12 +2,14 @@
    MAIN.JS PROFISSIONAL - COMPLETO E ATUALIZADO
    Sistema Catálogo Teixeira
    com detecção de Vendedor Externo (e-mail específico)
+   e Device ID persistente (localStorage + cookie)
 ====================================================== */
 
 /* ======================================================
    CONFIG
 ====================================================== */
 const API_BASE = "https://cliente1-jucivan.onrender.com";
+const COOKIE_AGE = 365; // dias
 
 /* ======================================================
    HELPERS
@@ -25,7 +27,12 @@ function isAdmin() {
 }
 
 function logout() {
-  localStorage.clear();
+  // ✅ CORRETO: remove apenas as chaves de sessão
+  localStorage.removeItem("token");
+  localStorage.removeItem("isAdmin");
+  localStorage.removeItem("isVendedorExterno");
+  // deviceId NÃO é removido
+
   window.location.href = "login.html";
 }
 
@@ -42,6 +49,54 @@ function safeJson(res) {
     }
   });
 }
+
+/* ======================================================
+   DEVICE ID PERSISTENTE (localStorage + cookie)
+====================================================== */
+function getDeviceId() {
+  // 1. Tenta ler do localStorage
+  let id = localStorage.getItem("deviceId");
+
+  // 2. Se não existir, tenta ler do cookie
+  if (!id) {
+    const match = document.cookie.match(/deviceId=([^;]+)/);
+    if (match) {
+      id = match[1];
+      localStorage.setItem("deviceId", id);
+      console.log("📱 Device ID recuperado do cookie:", id);
+    }
+  }
+
+  // 3. Se ainda não existe, gera um novo
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem("deviceId", id);
+    document.cookie = `deviceId=${id}; path=/; max-age=${COOKIE_AGE * 86400}`;
+    console.log("📱 Novo device ID gerado:", id);
+  } else {
+    // Garante que o cookie também tenha o ID
+    const cookieMatch = document.cookie.match(/deviceId=([^;]+)/);
+    if (!cookieMatch) {
+      document.cookie = `deviceId=${id}; path=/; max-age=${COOKIE_AGE * 86400}`;
+    }
+  }
+
+  return id;
+}
+
+// Gera/obtém o ID e expõe globalmente
+const DEVICE_ID = getDeviceId();
+console.log("✅ Device ID atual:", DEVICE_ID);
+
+// Sincroniza localStorage e cookie a cada 5 segundos (opcional)
+setInterval(() => {
+  const localId = localStorage.getItem("deviceId");
+  const cookieId = document.cookie.match(/deviceId=([^;]+)/)?.[1];
+  if (localId && cookieId && localId !== cookieId) {
+    localStorage.setItem("deviceId", cookieId);
+    console.log("🔄 Device ID sincronizado com o cookie.");
+  }
+}, 5000);
 
 /* ======================================================
    PROTEÇÃO DE ROTAS
@@ -86,16 +141,9 @@ if (loginForm) {
     btn.disabled = true;
     btn.innerText = "Entrando...";
 
-    // Captura o e-mail ANTES da requisição
     const email = $("email").value.trim();
     const password = $("password").value.trim();
-    const deviceId =
-        localStorage.getItem("deviceId") ||
-        crypto.randomUUID();
-
-      localStorage.setItem("deviceId", deviceId);
-
-      console.log("Device ID:", deviceId);
+    const deviceId = DEVICE_ID; // usa o ID persistente
 
     try {
       const res = await fetch(`${API_BASE}/api/auth/login`, {
@@ -117,9 +165,7 @@ if (loginForm) {
         localStorage.setItem("isAdmin", data.user.isAdmin);
 
         // 🔥 DETECTA VENDEDOR EXTERNO PELO E-MAIL FIXO
-        // Altere o e-mail abaixo conforme necessário
         const isVendedorExterno = (email === "vendedor@gmail.com");
-
         if (isVendedorExterno) {
           localStorage.setItem("isVendedorExterno", "true");
           console.log("✅ Vendedor externo detectado. Flag salva.");
@@ -246,57 +292,6 @@ if (productForm) {
 }
 
 /* ======================================================
-   UPDATE JSON (comentado - caso queira ativar)
-====================================================== 
-document.addEventListener("DOMContentLoaded", () => {
-
-  const btn = $("uploadJsonBtn");
-  const fileInput = $("jsonFile");
-  const status = $("jsonStatus");
-
-  if (!btn) return;
-
-  btn.addEventListener("click", () => {
-
-    if (!fileInput.files.length) {
-      alert("Selecione arquivo JSON.");
-      return;
-    }
-
-    const file = fileInput.files[0];
-    const reader = new FileReader();
-
-    reader.onload = async e => {
-      try {
-
-        const json = JSON.parse(e.target.result);
-
-        status.innerText = "⏳ Atualizando...";
-
-        const res = await fetch(`${API_BASE}/api/products/update-json`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": getToken()
-          },
-          body: JSON.stringify(json)
-        });
-
-        const data = await safeJson(res);
-
-        status.innerText = data.msg;
-        alert(data.msg);
-
-      } catch (err) {
-        status.innerText = "Erro no arquivo.";
-      }
-    };
-
-    reader.readAsText(file);
-  });
-});
-*/
-/* ======================================================
    PROMOÇÕES
 ====================================================== */
 const promoForm = $("promoForm");
@@ -410,3 +405,43 @@ function showSection(id) {
 
   if (el) el.classList.add("active");
 }
+
+/* ======================================================
+   UPDATE JSON (opcional - ative se necessário)
+====================================================== */
+/*
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = $("uploadJsonBtn");
+  const fileInput = $("jsonFile");
+  const status = $("jsonStatus");
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    if (!fileInput.files.length) {
+      alert("Selecione arquivo JSON.");
+      return;
+    }
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    reader.onload = async e => {
+      try {
+        const json = JSON.parse(e.target.result);
+        status.innerText = "⏳ Atualizando...";
+        const res = await fetch(`${API_BASE}/api/products/update-json`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": getToken()
+          },
+          body: JSON.stringify(json)
+        });
+        const data = await safeJson(res);
+        status.innerText = data.msg;
+        alert(data.msg);
+      } catch (err) {
+        status.innerText = "Erro no arquivo.";
+      }
+    };
+    reader.readAsText(file);
+  });
+});
+*/

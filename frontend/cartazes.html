@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criador de Cartazes</title>
+    <link rel="stylesheet" href="./cartazes.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="cartazes-page">
+        <header class="top">
+            <div>
+                <h1>Criador de Cartazes</h1>
+                <p>Monte ofertas profissionais em poucos segundos.</p>
+            </div>
+            <a href="admin.html" class="btn-voltar">
+                <i class="fa-solid fa-arrow-left"></i> Voltar
+            </a>
+        </header>
+
+        <div class="content">
+
+            <!-- MENU LATERAL -->
+            <div class="sidebar">
+                <div class="card">
+                    <h2>Campanha</h2>
+                    <input type="text" id="campaignTitle" placeholder="Ex.: Semana da Renovação">
+                    <input type="text" id="campaignSubtitle" placeholder="Ex.: Até 12x sem juros">
+                </div>
+
+                <div class="card">
+                    <h2>Pesquisar Produto</h2>
+                    <input type="text" id="searchProduct" placeholder="Digite o ID ou Nome">
+                    <button id="searchBtn">
+                        <i class="fa-solid fa-magnifying-glass"></i> Pesquisar
+                    </button>
+                </div>
+
+                <div class="card">
+                    <h2>Resultados</h2>
+                    <div id="searchResults">
+                        <!-- Produtos encontrados -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Produtos Selecionados</h2>
+                    <div id="selectedProducts">
+                        <p>Nenhum produto selecionado.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Modelo do Cartaz</h2>
+                    <select id="posterModel">
+                        <option value="4">Cartaz 4 Produtos</option>
+                        <option value="6">Cartaz 6 Produtos</option>
+                        <option value="8">Cartaz 8 Produtos</option>
+                        <option value="story">Story Instagram</option>
+                        <option value="banner">Banner</option>
+                    </select>
+                </div>
+
+                <button id="generatePoster">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Gerar Cartaz
+                </button>
+                <button id="downloadPoster">
+                    <i class="fa-solid fa-download"></i> Baixar PNG
+                </button>
+            </div>
+
+            <!-- PRÉVIA -->
+            <div class="preview">
+                <div id="posterPreview">
+                    <div class="poster-header">
+                        <h1 id="previewTitle">SEMANA DA RENOVAÇÃO</h1>
+                        <p id="previewSubtitle">Até 12x sem juros</p>
+                    </div>
+
+                    <div class="poster-grid" id="posterGrid">
+                        <!-- Produto 1 -->
+                        <div class="poster-product">
+                            <div class="product-placeholder">
+                                <i class="fa-regular fa-image"></i> Produto 1
+                            </div>
+                            <h3>Produto 1</h3>
+                            <div class="poster-price">R$ 999,90</div>
+                            <div class="poster-installments">10x sem juros</div>
+                        </div>
+
+                        <!-- Produto 2 -->
+                        <div class="poster-product">
+                            <div class="product-placeholder">
+                                <i class="fa-regular fa-image"></i> Produto 2
+                            </div>
+                            <h3>Produto 2</h3>
+                            <div class="poster-price">R$ 799,90</div>
+                            <div class="poster-installments">10x sem juros</div>
+                        </div>
+
+                        <!-- Produto 3 -->
+                        <div class="poster-product">
+                            <div class="product-placeholder">
+                                <i class="fa-regular fa-image"></i> Produto 3
+                            </div>
+                            <h3>Produto 3</h3>
+                            <div class="poster-price">R$ 1.299,90</div>
+                            <div class="poster-installments">10x sem juros</div>
+                        </div>
+
+                        <!-- Produto 4 -->
+                        <div class="poster-product">
+                            <div class="product-placeholder">
+                                <i class="fa-regular fa-image"></i> Produto 4
+                            </div>
+                            <h3>Produto 4</h3>
+                            <div class="poster-price">R$ 699,90</div>
+                            <div class="poster-installments">10x sem juros</div>
+                        </div>
+                    </div>
+
+                    <div class="poster-footer">
+                        <img src="../imagens/logo.png" id="posterLogo" style="height:70px;margin-bottom:15px;" alt="Logo">
+                        <p>📍 Teixeira Móveis & Eletros</p>
+                        <p>📲 WhatsApp • Instagram</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./cartazes.js"></script>
+</body>
+</html>

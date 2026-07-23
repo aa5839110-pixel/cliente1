@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizar Cartaz</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="poster.css">
+    <!-- Font Awesome (ícones) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="poster-page">
+
+        <!-- ===== TOP BAR ===== -->
+        <header class="top-bar">
+            <div>
+                <h1>Visualizar Cartaz</h1>
+                <p>Edite antes de exportar.</p>
+            </div>
+            <div class="actions">
+                <button id="backBtn">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Voltar
+                </button>
+                <button id="downloadPNG">
+                    <i class="fa-solid fa-image"></i>
+                    PNG
+                </button>
+                <button id="downloadPDF">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    PDF
+                </button>
+            </div>
+        </header>
+
+        <!-- ===== WORKSPACE ===== -->
+        <div class="workspace">
+
+            <!-- PAINEL DE EDIÇÃO (ESQUERDO) -->
+            <aside class="editor">
+                <!-- Título -->
+                <div class="editor-card">
+                    <h3>Título</h3>
+                    <input type="text" id="posterTitle" placeholder="Ex.: SEMANA DA RENOVAÇÃO">
+                </div>
+
+                <!-- Subtítulo -->
+                <div class="editor-card">
+                    <h3>Subtítulo</h3>
+                    <input type="text" id="posterSubtitle" placeholder="Ex.: Até 12x sem juros">
+                </div>
+
+                <!-- Cor de fundo -->
+                <div class="editor-card">
+                    <h3>Cor do Fundo</h3>
+                    <input type="color" id="backgroundColor" value="#b70000">
+                </div>
+
+                <!-- Produtos do cartaz -->
+                <div class="editor-card">
+                    <h3>Produtos</h3>
+                    <div id="posterProducts">
+                        <!-- Os produtos serão listados aqui via JavaScript -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- PRÉVIA DO CARTAZ (DIREITO) -->
+            <section class="preview">
+                <canvas
+                id="posterCanvas"
+                width="900"
+                height="1200">
+                </canvas>
+            </section>
+        </div>
+
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/fabric@6.7.1/dist/index.min.js"></script>
+    <script src="poster.js"></script>
+</body>
+</html>

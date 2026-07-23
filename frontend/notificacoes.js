@@ -41,7 +41,7 @@ form.addEventListener("submit", async (e) => {
 
   try {
     const response = await fetch(
-      "https://catalogo-h0ro.onrender.com/api/notifications",
+      "https://cliente1-jucivan.onrender.com/api/notifications",
       {
         method: "POST",
         headers: {
