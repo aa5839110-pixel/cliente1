@@ -9,6 +9,33 @@ import StockHistory from "../models/StockHistory.js";
 
 const router = express.Router();
 
+// Converte números nos formatos antigo e brasileiro
+function converterNumero(valor, fallback = 0) {
+  if (valor === null || valor === undefined || valor === "") {
+    return fallback;
+  }
+
+  if (typeof valor === "number") {
+    return Number.isFinite(valor) ? valor : fallback;
+  }
+
+  let texto = String(valor)
+    .replace(/R\$/gi, "")
+    .replace(/\s/g, "")
+    .trim();
+
+  // Formato brasileiro: 1.560,00 ou 1143,1
+  if (texto.includes(",")) {
+    texto = texto
+      .replace(/\./g, "")
+      .replace(",", ".");
+  }
+
+  const numero = Number(texto);
+
+  return Number.isFinite(numero) ? numero : fallback;
+}
+
 // Cloudinary config
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -106,7 +133,7 @@ router.post(
         console.log(`✅ ${imageGallery.length} imagem(ns) enviada(s)`);
       }
 
-      const estoqueInicial = Number(req.body.stock || 0);
+      const estoqueInicial = converterNumero(req.body.stock, 0);
 
       const novoProduto = new Product({
         productId: req.body.productId,
@@ -114,8 +141,8 @@ router.post(
         description: req.body.description || "",
         obs: req.body.obs || "",
         category: req.body.category,
-        price1: Number(req.body.price1 || 0),
-        price2: Number(req.body.price2 || 0),
+        price1: converterNumero(req.body.price1, 0),
+        price2: converterNumero(req.body.price2, 0),
         stockL3: estoqueInicial,
         stockL10: 0,
         stockTotal: estoqueInicial,
@@ -155,10 +182,10 @@ router.put(
       if (req.body.name !== undefined) produto.name = req.body.name;
       if (req.body.description !== undefined) produto.description = req.body.description;
       if (req.body.obs !== undefined) produto.obs = req.body.obs;
-      if (req.body.price1 !== undefined) produto.price1 = Number(req.body.price1);
-      if (req.body.price2 !== undefined) produto.price2 = Number(req.body.price2);
+      if (req.body.price1 !== undefined) produto.price1 = converterNumero(req.body.price1, produto.price1);
+      if (req.body.price2 !== undefined) produto.price2 = converterNumero(req.body.price2, produto.price2);
       if (req.body.stock !== undefined) {
-        const novoStock = Number(req.body.stock);
+        const novoStock = converterNumero(req.body.stock, 0);
         produto.stockL3 = novoStock;
         produto.stockTotal = novoStock + Number(produto.stockL10 || 0);
         produto.stock = produto.stockTotal;
@@ -219,9 +246,12 @@ router.post("/update-json", auth, async (req, res) => {
         if (!codigo) continue;
         const produto = await Product.findOne({ productId: codigo });
         if (!produto) continue;
-        const estoqueNovo = Number(String(item.stock ?? item.estock ?? 0).replace(",", "."));
-        const preco1 = Number(String(item.price1 ?? produto.price1).replace(",", "."));
-        const preco2 = Number(String(item.price2 ?? produto.price2).replace(",", "."));
+
+        // ✅ Conversão robusta (aceita "1.560,00", "1143,1", "1143.1", "R$ 25,90", etc.)
+        const estoqueNovo = converterNumero(item.stock ?? item.estock, 0);
+        const preco1 = converterNumero(item.price1, converterNumero(produto.price1, 0));
+        const preco2 = converterNumero(item.price2, converterNumero(produto.price2, 0));
+
         let estoqueAntigo = 0;
         if (loja === "3") { estoqueAntigo = Number(produto.stockL3 || 0); produto.stockL3 = estoqueNovo; }
         if (loja === "10") { estoqueAntigo = Number(produto.stockL10 || 0); produto.stockL10 = estoqueNovo; }

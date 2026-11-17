@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="poster.css">
     <!-- Font Awesome (ícones) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Montserrat:wght@400;700&family=Oswald:wght@400;700&family=Poppins:wght@400;600;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -25,14 +28,6 @@
                     <i class="fa-solid fa-arrow-left"></i>
                     Voltar
                 </button>
-                <button id="downloadPNG">
-                    <i class="fa-solid fa-image"></i>
-                    PNG
-                </button>
-                <button id="downloadPDF">
-                    <i class="fa-solid fa-file-pdf"></i>
-                    PDF
-                </button>
             </div>
         </header>
 
@@ -41,31 +36,81 @@
 
             <!-- PAINEL DE EDIÇÃO (ESQUERDO) -->
             <aside class="editor">
-                <!-- Título -->
+
                 <div class="editor-card">
-                    <h3>Título</h3>
-                    <input type="text" id="posterTitle" placeholder="Ex.: SEMANA DA RENOVAÇÃO">
+                    <h3>Fundo do Cartaz</h3>
+                    <input type="color" id="canvasBgColor" value="#b70000">
                 </div>
 
-                <!-- Subtítulo -->
+                <div id="propertiesPanel"></div>
+
+                <hr>
+
                 <div class="editor-card">
-                    <h3>Subtítulo</h3>
-                    <input type="text" id="posterSubtitle" placeholder="Ex.: Até 12x sem juros">
+                    <h3>Adicionar</h3>
+
+                    <button id="addTextBtn">
+                        <i class="fa-solid fa-font"></i>
+                        Adicionar Texto
+                    </button>
+
+                    <button id="addImageBtn">
+                        <i class="fa-solid fa-image"></i>
+                        Adicionar Imagem
+                    </button>
+
+                    <button id="addShapeBtn">
+                        <i class="fa-solid fa-square"></i>
+                        Adicionar Forma
+                    </button>
+
+                    <button id="addLogoBtn">
+                        <i class="fa-solid fa-building"></i>
+                        <input type="file" id="logoInput" accept="image/*" style="display:none">
+                        Adicionar Logo
+                    </button>
+
+                    <button id="addQrBtn">
+                        <i class="fa-solid fa-qrcode"></i>
+                        Adicionar QRCode
+                    </button>
                 </div>
 
-                <!-- Cor de fundo -->
+                <hr>
+
+                <!-- ===== SALVAR / CARREGAR ===== -->
                 <div class="editor-card">
-                    <h3>Cor do Fundo</h3>
-                    <input type="color" id="backgroundColor" value="#b70000">
+                    <h3>Salvar / Carregar</h3>
+                    <button id="savePosterBtn">
+                        <i class="fa-solid fa-floppy-disk"></i> Salvar Cartaz
+                    </button>
+                    <select id="loadPosterSelect">
+                        <option value="">Carregar salvo...</option>
+                    </select>
+                    <button id="loadPosterBtn" disabled>Carregar</button>
                 </div>
 
-                <!-- Produtos do cartaz -->
+                <hr>
+
                 <div class="editor-card">
-                    <h3>Produtos</h3>
-                    <div id="posterProducts">
-                        <!-- Os produtos serão listados aqui via JavaScript -->
-                    </div>
+                    <h3>Exportar</h3>
+
+                    <button id="downloadPNG">
+                        <i class="fa-solid fa-image"></i>
+                        PNG
+                    </button>
+
+                    <button id="downloadPDF">
+                        <i class="fa-solid fa-file-pdf"></i>
+                        PDF
+                    </button>
+
+                    <button id="printPoster">
+                        <i class="fa-solid fa-print"></i>
+                        Imprimir
+                    </button>
                 </div>
+
             </aside>
 
             <!-- PRÉVIA DO CARTAZ (DIREITO) -->
@@ -82,6 +127,11 @@
 
     <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/fabric@6.7.1/dist/index.min.js"></script>
-    <script src="poster.js"></script>
+    <script src="js/helpers.js"></script>
+    <script src="js/product.js"></script>
+    <script src="js/text.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/editor.js"></script>
+    <script src="js/poster.js"></script>
 </body>
 </html>
